@@ -10,12 +10,12 @@ module BestInPlace
         raise ArgumentError, "Can't find helper #{opts[:display_with]}"
       end
 
-      real_object = real_object_for object
+      real_object = best_in_place_real_object_for object
       opts[:type] ||= :input
       opts[:collection] ||= []
       field = field.to_s
 
-      display_value = build_value_for(real_object, field, opts)
+      display_value = best_in_place_build_value_for(real_object, field, opts)
 
       collection = nil
       value = nil
@@ -43,20 +43,20 @@ module BestInPlace
       out << " id='#{BestInPlace::Utils.build_best_in_place_id(real_object, field)}'"
       out << " data-url='#{opts[:path].blank? ? url_for(object) : url_for(opts[:path])}'"
       out << " data-object='#{opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)}'"
-      out << " data-collection='#{attribute_escape(collection)}'" unless collection.blank?
+      out << " data-collection='#{best_in_place_attribute_escape(collection)}'" unless collection.blank?
       out << " data-attribute='#{field}'"
       out << " data-activator='#{opts[:activator]}'" unless opts[:activator].blank?
       out << " data-ok-button='#{opts[:ok_button]}'" unless opts[:ok_button].blank?
       out << " data-ok-button-class='#{opts[:ok_button_class]}'" unless opts[:ok_button_class].blank?
       out << " data-cancel-button='#{opts[:cancel_button]}'" unless opts[:cancel_button].blank?
       out << " data-cancel-button-class='#{opts[:cancel_button_class]}'" unless opts[:cancel_button_class].blank?
-      out << " data-nil='#{attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
+      out << " data-nil='#{best_in_place_attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
       out << " data-use-confirm='#{opts[:use_confirm]}'" unless opts[:use_confirm].nil?
       out << " data-type='#{opts[:type]}'"
       out << " data-inner-class='#{opts[:inner_class]}'" if opts[:inner_class]
       out << " data-html-attrs='#{opts[:html_attrs].to_json}'" unless opts[:html_attrs].blank?
-      out << " data-original-content='#{attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
-      out << " data-value='#{attribute_escape(value)}'" if value
+      out << " data-original-content='#{best_in_place_attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
+      out << " data-value='#{best_in_place_attribute_escape(value)}'" if value
 
       if opts[:data] && opts[:data].is_a?(Hash)
         opts[:data].each do |k, v|
@@ -80,19 +80,20 @@ module BestInPlace
       if condition
         best_in_place(object, field, opts)
       else
-        build_value_for real_object_for(object), field, opts
+        best_in_place_build_value_for best_in_place_real_object_for(object), field, opts
       end
     end
 
-  private
-    def build_value_for(object, field, opts)
+    private
+
+    def best_in_place_build_value_for(object, field, opts)
       return "" if object.send(field).blank?
 
       klass = if object.respond_to?(:id)
-        "#{object.class}_#{object.id}"
-      else
-        object.class.to_s
-      end
+                "#{object.class}_#{object.id}"
+              else
+                object.class.to_s
+              end
 
       if opts[:display_as]
         BestInPlace::DisplayMethods.add_model_method(klass, field, opts[:display_as])
@@ -115,18 +116,20 @@ module BestInPlace
       end
     end
 
-    def attribute_escape(data)
+    def best_in_place_attribute_escape(data)
       return unless data
 
       data.to_s.
-        gsub("&", "&amp;").
-        gsub("'", "&apos;").
-        gsub(/\r?\n/, "&#10;")
+          gsub("&", "&amp;").
+          gsub("'", "&apos;").
+          gsub(/\r?\n/, "&#10;")
     end
 
-    def real_object_for(object)
+    def best_in_place_real_object_for(object)
       (object.is_a?(Array) && object.last.class.respond_to?(:model_name)) ? object.last : object
     end
   end
 end
+
+
 
