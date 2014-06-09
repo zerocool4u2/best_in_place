@@ -1,5 +1,4 @@
 # encoding: utf-8
-require "spec_helper"
 
 describe "JS behaviour", :js => true do
   before do
@@ -22,7 +21,7 @@ describe "JS behaviour", :js => true do
   end
 
   describe "namespaced controllers" do
-    it "should be able to use array-notation to describe both object and path" do
+    xit "should be able to use array-notation to describe both object and path" do
       @user.save!
       visit admin_user_path(@user)
 

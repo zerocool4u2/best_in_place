@@ -1,5 +1,4 @@
 # encoding: utf-8
-require "spec_helper"
 
 describe "Monitor new fields", :js => true do
   before do

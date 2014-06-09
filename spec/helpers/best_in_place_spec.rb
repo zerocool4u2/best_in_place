@@ -1,9 +1,9 @@
 # encoding: utf-8
-require "spec_helper"
 
-describe BestInPlace::BestInPlaceHelpers do
+describe BestInPlace::BestInPlaceHelpers, type: :helper do
   describe "#best_in_place" do
     before do
+
       @user = User.new :name => "Lucia",
         :last_name => "Napoli",
         :email => "lucianapoli@gmail.com",
@@ -131,14 +131,14 @@ describe BestInPlace::BestInPlaceHelpers do
         end
 
         it "should show '' if the object responds with nil for the passed attribute" do
-          @user.stub!(:name).and_return(nil)
+          expect(@user).to receive(:name).and_return("")
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
           span = nk.css("span")
           span.text.should == ""
         end
 
         it "should show '' if the object responds with an empty string for the passed attribute" do
-          @user.stub!(:name).and_return("")
+          expect(@user).to receive(:name).and_return("")
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
           span = nk.css("span")
           span.text.should == ""

@@ -4,7 +4,8 @@ module BestInPlace
       obj.changed? ? respond_bip_error(obj) : respond_bip_ok(obj)
     end
 
-  private
+    private
+
     def respond_bip_ok(obj)
       if obj.respond_to?(:id)
         klass = "#{obj.class}_#{obj.id}"

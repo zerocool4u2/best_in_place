@@ -1,6 +1,6 @@
 module BestInPlace
   module DisplayMethods
-    extend self
+    module_function
 
     class Renderer < Struct.new(:opts)
       def render_json(object)

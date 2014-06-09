@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "best_in_place/version"
+require 'best_in_place/version'
 
 Gem::Specification.new do |s|
   s.name        = "best_in_place"
@@ -15,14 +15,10 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "best_in_place"
 
   s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.test_files    = `git ls-files -- {spec}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency "rails", ">= 3.1"
-  s.add_dependency "jquery-rails"
+  s.add_dependency 'actionpack', '>= 3.2'
 
-  s.add_development_dependency "rspec-rails", "~> 2.8.0"
-  s.add_development_dependency "nokogiri"
-  s.add_development_dependency "capybara", "~> 1.1.2"
 end
