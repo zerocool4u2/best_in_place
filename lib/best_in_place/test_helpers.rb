@@ -15,12 +15,11 @@ module BestInPlace
 
     def bip_text(model, attr, new_value)
       id = BestInPlace::Utils.build_best_in_place_id model, attr
-      aa =  <<-JS
+      page.execute_script <<-JS
         jQuery("##{id}").click();
         jQuery("##{id} input[name='#{attr}']").val('#{escape_javascript new_value.to_s}');
         jQuery("##{id} form").submit();
       JS
-      page.execute_script aa
     end
 
     def bip_bool(model, attr)
