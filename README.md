@@ -67,6 +67,7 @@ Options:
 
 ###best_in_place_if
 **best_in_place_if condition, object, field, OPTIONS**
+see also **best_in_place_unless
 
 It allows us to use best_in_place only if the first new parameter, a
 condition, is satisfied. Specifically:

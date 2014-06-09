@@ -84,6 +84,11 @@ module BestInPlace
       end
     end
 
+    def best_in_place_unless(condition, object, field, opts={})
+      best_in_place_if(!condition, object, field, opts={} )
+    end
+
+
     private
 
     def best_in_place_build_value_for(object, field, opts)
