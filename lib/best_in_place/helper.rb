@@ -32,47 +32,42 @@ module BestInPlace
         display_value = value ? opts[:collection][1] : opts[:collection][0]
         collection = opts[:collection].to_json
       end
-      classes = ["best_in_place"]
-      unless opts[:classes].nil?
-        # the next three lines enable this opt to handle both a stings and a arrays
-        classes << opts[:classes]
-        classes.flatten!
-      end
+      classes = ["best_in_place"] + Array(opts[:classes])
 
       out = "<span class='#{classes.join(" ")}'"
-      out << " id='#{ opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)}'"
-      out << " data-url='#{url_for(opts[:path] || object) }'"
-      out << " data-object='#{opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)}'"
-      out << " data-collection='#{best_in_place_attribute_escape(collection)}'" unless collection.blank?
-      out << " data-attribute='#{field}'"
-      out << " data-activator='#{opts[:activator]}'" unless opts[:activator].blank?
-      out << " data-ok-button='#{opts[:ok_button]}'" unless opts[:ok_button].blank?
-      out << " data-ok-button-class='#{opts[:ok_button_class]}'" unless opts[:ok_button_class].blank?
-      out << " data-cancel-button='#{opts[:cancel_button]}'" unless opts[:cancel_button].blank?
-      out << " data-cancel-button-class='#{opts[:cancel_button_class]}'" unless opts[:cancel_button_class].blank?
-      out << " data-nil='#{best_in_place_attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
-      out << " data-use-confirm='#{opts[:use_confirm]}'" unless opts[:use_confirm].nil?
-      out << " data-type='#{opts[:type]}'"
-      out << " data-inner-class='#{opts[:inner_class]}'" if opts[:inner_class]
-      out << " data-html-attrs='#{opts[:html_attrs].to_json}'" unless opts[:html_attrs].blank?
-      out << " data-original-content='#{best_in_place_attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
-      out << " data-value='#{best_in_place_attribute_escape(value)}'" if value
+      out.concat " id='#{ opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)}'"
+      out.concat " data-url='#{url_for(opts[:path] || object) }'"
+      out.concat " data-object='#{opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)}'"
+      out.concat " data-collection='#{best_in_place_attribute_escape(collection)}'" unless collection.blank?
+      out.concat " data-attribute='#{field}'"
+      out.concat " data-activator='#{opts[:activator]}'" unless opts[:activator].blank?
+      out.concat " data-ok-button='#{opts[:ok_button]}'" unless opts[:ok_button].blank?
+      out.concat " data-ok-button-class='#{opts[:ok_button_class]}'" unless opts[:ok_button_class].blank?
+      out.concat " data-cancel-button='#{opts[:cancel_button]}'" unless opts[:cancel_button].blank?
+      out.concat " data-cancel-button-class='#{opts[:cancel_button_class]}'" unless opts[:cancel_button_class].blank?
+      out.concat " data-nil='#{best_in_place_attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
+      out.concat " data-use-confirm='#{opts[:use_confirm]}'" unless opts[:use_confirm].nil?
+      out.concat " data-type='#{opts[:type]}'"
+      out.concat " data-inner-class='#{opts[:inner_class]}'" if opts[:inner_class]
+      out.concat " data-html-attrs='#{opts[:html_attrs].to_json}'" unless opts[:html_attrs].blank?
+      out.concat " data-original-content='#{best_in_place_attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
+      out.concat " data-value='#{best_in_place_attribute_escape(value)}'" if value
 
       if opts[:data] && opts[:data].is_a?(Hash)
         opts[:data].each do |k, v|
           if !v.is_a?(String) && !v.is_a?(Symbol)
             v = v.to_json
           end
-          out << %( data-#{k.to_s.dasherize}='#{v}')
+          out.concat %( data-#{k.to_s.dasherize}='#{v}')
         end
       end
       if !opts[:sanitize].nil? && !opts[:sanitize]
-        out << " data-sanitize='false'>"
-        out << display_value.to_s
+        out.concat " data-sanitize='false'>"
+        out.concat display_value.to_s
       else
-        out << ">#{h(display_value.to_s)}"
+        out.concat ">#{h(display_value.to_s)}"
       end
-      out << "</span>"
+      out.concat "</span>"
       raw out
     end
 
@@ -85,7 +80,7 @@ module BestInPlace
     end
 
     def best_in_place_unless(condition, object, field, opts={})
-      best_in_place_if(!condition, object, field, opts={} )
+      best_in_place_if(!condition, object, field, opts)
     end
 
 
