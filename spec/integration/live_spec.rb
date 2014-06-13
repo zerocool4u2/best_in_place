@@ -21,19 +21,19 @@ describe "Monitor new fields", :js => true do
     sleep(1) #give time to the ajax request to work
 
     within("#email") do
-      page.should have_content("lucianapoli@gmail")
+      expect(page).to have_content("lucianapoli@gmail")
     end
 
     bip_text @user, :email, "new@email.com"
 
     within("#email") do
-      page.should have_content("new@email.com")
+      expect(page).to have_content("new@email.com")
     end
 
     bip_text @user, :email, "new_two@email.com"
 
     within("#email") do
-      page.should have_content("new_two@email.com")
+      expect(page).to have_content("new_two@email.com")
     end
   end
 end

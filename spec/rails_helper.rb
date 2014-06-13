@@ -17,4 +17,5 @@ require_relative 'support/retry_on_timeout'
 RSpec.configure do |config|
   config.include BestInPlace::TestHelpers
   config.use_transactional_fixtures = false
+  config.raise_errors_for_deprecations!
 end
