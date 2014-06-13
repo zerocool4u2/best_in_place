@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-describe BestInPlace::BestInPlaceHelpers, type: :helper do
+describe BestInPlace::Helper, type: :helper do
   describe "#best_in_place" do
     before do
 

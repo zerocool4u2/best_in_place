@@ -1,5 +1,5 @@
 module BestInPlace
-  module BestInPlaceHelpers
+  module Helper
 
     def best_in_place(object, field, opts = {})
       if opts[:display_as] && opts[:display_with]
