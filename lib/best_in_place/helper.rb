@@ -2,73 +2,59 @@ module BestInPlace
   module Helper
 
     def best_in_place(object, field, opts = {})
-      if opts[:display_as] && opts[:display_with]
-        raise ArgumentError, "Can't use both 'display_as' and 'display_with' options at the same time"
-      end
 
-      if opts[:display_with] && !opts[:display_with].is_a?(Proc) && !ViewHelpers.respond_to?(opts[:display_with])
-        raise ArgumentError, "Can't find helper #{opts[:display_with]}"
-      end
+      best_in_place_assert_arguments(opts)
 
       real_object = best_in_place_real_object_for object
-      opts[:type] ||= :input
-      opts[:collection] ||= []
+      type = opts[:type] || :input
+      collection = Array(opts[:collection])
       field = field.to_s
 
       display_value = best_in_place_build_value_for(real_object, field, opts)
 
-      collection = nil
       value = nil
-      if opts[:type] == :select && !opts[:collection].blank?
+      if type == :select && collection.any?
         value = real_object.send(field)
         display_value = Hash[opts[:collection]].stringify_keys[value.to_s]
         collection = opts[:collection].to_json
       end
-      if opts[:type] == :checkbox
+      if type == :checkbox
         value = !!real_object.send(field)
-        if opts[:collection].blank? || opts[:collection].size != 2
-          opts[:collection] = ["No", "Yes"]
-        end
-        display_value = value ? opts[:collection][1] : opts[:collection][0]
-        collection = opts[:collection].to_json
+        collection = %w(No Yes) if collection.blank?
+        display_value = value ? collection.last : collection.first
+        collection = collection.to_json
       end
-      classes = ["best_in_place"] + Array(opts[:classes])
+      options={}
+      options[:class] = ['best_in_place'] + Array(opts[:classes])
+      options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
+      options[:data]= HashWithIndifferentAccess.new(opts[:data])
 
-      out = "<span class='#{classes.join(" ")}'"
-      out.concat " id='#{ opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)}'"
-      out.concat " data-url='#{url_for(opts[:path] || object) }'"
-      out.concat " data-object='#{opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)}'"
-      out.concat " data-collection='#{best_in_place_attribute_escape(collection)}'" unless collection.blank?
-      out.concat " data-attribute='#{field}'"
-      out.concat " data-activator='#{opts[:activator]}'" unless opts[:activator].blank?
-      out.concat " data-ok-button='#{opts[:ok_button]}'" unless opts[:ok_button].blank?
-      out.concat " data-ok-button-class='#{opts[:ok_button_class]}'" unless opts[:ok_button_class].blank?
-      out.concat " data-cancel-button='#{opts[:cancel_button]}'" unless opts[:cancel_button].blank?
-      out.concat " data-cancel-button-class='#{opts[:cancel_button_class]}'" unless opts[:cancel_button_class].blank?
-      out.concat " data-nil='#{best_in_place_attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
-      out.concat " data-use-confirm='#{opts[:use_confirm]}'" unless opts[:use_confirm].nil?
-      out.concat " data-type='#{opts[:type]}'"
-      out.concat " data-inner-class='#{opts[:inner_class]}'" if opts[:inner_class]
-      out.concat " data-html-attrs='#{opts[:html_attrs].to_json}'" unless opts[:html_attrs].blank?
-      out.concat " data-original-content='#{best_in_place_attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
-      out.concat " data-value='#{best_in_place_attribute_escape(value)}'" if value
+      options[:data]['attribute'] = field
+      options[:data]['activator'] = opts[:activator] unless opts[:activator].blank?
+      options[:data]['cancel-button'] = opts[:cancel_button] unless opts[:cancel_button].blank?
+      options[:data]['cancel-button-class'] = opts[:cancel_button_class] unless opts[:cancel_button_class].blank?
+      options[:data]['collection'] = html_escape(collection) unless collection.blank?
+      options[:data]['html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
+      options[:data]['inner-class'] = opts[:inner_class] if opts[:inner_class]
+      options[:data]['nil'] = html_escape(opts[:nil]) unless opts[:nil].blank?
+      options[:data]['object'] = opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)
+      options[:data]['ok-button'] = opts[:ok_button] unless opts[:ok_button].blank?
+      options[:data]['ok-button-class'] = opts[:ok_button_class] unless opts[:ok_button_class].blank?
+      options[:data]['original-content'] = html_escape(real_object.send(field)) if opts[:display_as] || opts[:display_with]
+      options[:data]['type'] = type
+      options[:data]['url'] = url_for(opts[:path] || object)
+      options[:data]['use-confirm'] = opts[:use_confirm] unless opts[:use_confirm].nil?
+      options[:data]['value'] = html_escape(value) if value
 
-      if opts[:data] && opts[:data].is_a?(Hash)
-        opts[:data].each do |k, v|
-          if !v.is_a?(String) && !v.is_a?(Symbol)
-            v = v.to_json
-          end
-          out.concat %( data-#{k.to_s.dasherize}='#{v}')
-        end
+
+      if opts[:sanitize].presence.to_s == 'false'
+        options[:data][:sanitize] = false
       end
-      if !opts[:sanitize].nil? && !opts[:sanitize]
-        out.concat " data-sanitize='false'>"
-        out.concat display_value.to_s
-      else
-        out.concat ">#{h(display_value.to_s)}"
+
+      content_tag(:span, options) do
+        !options[:data][:sanitize] ? display_value : display_value.html_safe
       end
-      out.concat "</span>"
-      raw out
+
     end
 
     def best_in_place_if(condition, object, field, opts={})
@@ -87,7 +73,7 @@ module BestInPlace
     private
 
     def best_in_place_build_value_for(object, field, opts)
-      return "" if object.send(field).blank?
+      return '' if object.send(field).blank?
 
       klass = if object.respond_to?(:id)
                 "#{object.class}_#{object.id}"
@@ -116,17 +102,23 @@ module BestInPlace
       end
     end
 
-    def best_in_place_attribute_escape(data)
-      return unless data
-
-      data.to_s.
-          gsub("&", "&amp;").
-          gsub("'", "&apos;").
-          gsub(/\r?\n/, "&#10;")
-    end
-
     def best_in_place_real_object_for(object)
       (object.is_a?(Array) && object.last.class.respond_to?(:model_name)) ? object.last : object
+    end
+
+    def best_in_place_assert_arguments(args)
+      args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
+      :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
+      :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
+      :use_confirm, :sanitize, :helper_options)
+
+      if args[:display_as] && args[:display_with]
+        fail ArgumentError, "Can't use both 'display_as' and 'display_with' options at the same time"
+      end
+
+      if args[:display_with] && !args[:display_with].is_a?(Proc) && !ViewHelpers.respond_to?(args[:display_with])
+        fail ArgumentError, "Can't find helper #{args[:display_with]}"
+      end
     end
   end
 end
