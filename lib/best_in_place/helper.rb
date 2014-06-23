@@ -25,25 +25,29 @@ module BestInPlace
         collection = collection.to_json
       end
       options={}
-      options[:class] = ['best_in_place'] + Array(opts[:classes])
+      options[:class] = ['best_in_place'] + Array(opts[:class] || opts[:classes])
       options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
       options[:data]= HashWithIndifferentAccess.new(opts[:data])
 
       options[:data]['attribute'] = field
-      options[:data]['activator'] = opts[:activator] unless opts[:activator].blank?
-      options[:data]['cancel-button'] = opts[:cancel_button] unless opts[:cancel_button].blank?
-      options[:data]['cancel-button-class'] = opts[:cancel_button_class] unless opts[:cancel_button_class].blank?
+      options[:data]['activator'] = opts[:activator].presence
+      options[:data]['cancel-button'] = opts[:cancel_button].presence
+      options[:data]['cancel-button-class'] = opts[:cancel_button_class].presence
       options[:data]['collection'] = html_escape(collection) unless collection.blank?
       options[:data]['html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
-      options[:data]['inner-class'] = opts[:inner_class] if opts[:inner_class]
-      options[:data]['nil'] = html_escape(opts[:nil]) unless opts[:nil].blank?
-      options[:data]['object'] = opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)
-      options[:data]['ok-button'] = opts[:ok_button] unless opts[:ok_button].blank?
-      options[:data]['ok-button-class'] = opts[:ok_button_class] unless opts[:ok_button_class].blank?
+      options[:data]['inner-class'] = opts[:inner_class].presence
+
+      options[:data]['nil'] = html_escape(opts[:place_holder].presence)
+
+      options[:data]['object'] = opts[:as]  || BestInPlace::Utils.object_to_key(real_object)
+      options[:data]['ok-button'] = opts[:ok_button].presence
+      options[:data]['ok-button-class'] = opts[:ok_button_class].presence
       options[:data]['original-content'] = html_escape(real_object.send(field)) if opts[:display_as] || opts[:display_with]
       options[:data]['type'] = type
-      options[:data]['url'] = url_for(opts[:path] || object)
-      options[:data]['use-confirm'] = opts[:use_confirm] unless opts[:use_confirm].nil?
+
+      options[:data]['url'] = url_for(opts[:url] || object)
+
+      options[:data]['use-confirm'] = opts[:use_confirm].presence
       options[:data]['value'] = html_escape(value) if value
 
 
@@ -108,17 +112,42 @@ module BestInPlace
 
     def best_in_place_assert_arguments(args)
       args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
-      :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
-      :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
-      :use_confirm, :sanitize, :helper_options)
+                             :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
+                             :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
+                             :use_confirm, :sanitize, :helper_options, :url, :place_holder, :class, :as)
+
+      best_in_place_deprecated_options(args)
 
       if args[:display_as] && args[:display_with]
-        fail ArgumentError, "Can't use both 'display_as' and 'display_with' options at the same time"
+        fail ArgumentError, 'Can`t use both `display_as`` and `display_with` options at the same time'
       end
 
       if args[:display_with] && !args[:display_with].is_a?(Proc) && !ViewHelpers.respond_to?(args[:display_with])
         fail ArgumentError, "Can't find helper #{args[:display_with]}"
       end
+    end
+
+    def best_in_place_deprecated_options(args)
+      if deprecated_option = args.delete(:path)
+        args[:url] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :path is deprecated in favor of :url ')
+      end
+
+      if deprecated_option = args.delete(:object_name)
+        args[:as] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :object_name is deprecated in favor of :as ')
+      end
+
+      if deprecated_option = args.delete(:classes)
+        args[:class] = deprecated_option
+        AActiveSupport::Deprecation.warn('[Best_in_place] :classes is deprecated in favor of :class ')
+      end
+
+      if deprecated_option = args.delete(:nil)
+        args[:place_holder] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :nil is deprecated in favor of :place_holder ')
+      end
+
     end
   end
 end

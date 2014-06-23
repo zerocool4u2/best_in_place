@@ -9,10 +9,15 @@ Gem::Specification.new do |s|
   s.authors     = ["Bernat Farrero"]
   s.email       = ["bernat@itnig.net"]
   s.homepage    = "http://github.com/bernat/best_in_place"
-  s.summary     = %q{It makes any field in place editable by clicking on it, it works for inputs, textareas, select dropdowns and checkboxes}
-  s.description = %q{BestInPlace is a jQuery script and a Rails 3 helper that provide the method best_in_place to display any object field easily editable for the user by just clicking on it. It supports input data, text data, boolean data and custom dropdown data. It works with RESTful controllers.}
-
-  s.rubyforge_project = "best_in_place"
+  s.summary     = <<SUM
+  It makes any field in place editable by clicking on it, it works for inputs,
+  textareas, select dropdowns and checkboxes
+SUM
+  s.description = <<DESC
+  BestInPlace is a jQuery script and a Rails helper that provide the method best_in_place to display
+  any object field easily editable for the user by just clicking on it. It supports input data,
+  text data, boolean data and custom dropdown data. It works with RESTful controllers.
+DESC
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {spec}/*`.split("\n")
