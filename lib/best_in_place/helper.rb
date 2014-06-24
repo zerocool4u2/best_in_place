@@ -6,7 +6,7 @@ module BestInPlace
       best_in_place_assert_arguments(opts)
 
       real_object = best_in_place_real_object_for object
-      type = opts[:type] || :input
+      type = opts[:as] || :input
       collection = Array(opts[:collection])
       field = field.to_s
 
@@ -37,9 +37,9 @@ module BestInPlace
       options[:data]['html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
       options[:data]['inner-class'] = opts[:inner_class].presence
 
-      options[:data]['nil'] = html_escape(opts[:place_holder].presence)
+      options[:data]['nil'] = html_escape(opts[:place_holder]).presence
 
-      options[:data]['object'] = opts[:as]  || BestInPlace::Utils.object_to_key(real_object)
+      options[:data]['object'] = opts[:param] || BestInPlace::Utils.object_to_key(real_object)
       options[:data]['ok-button'] = opts[:ok_button].presence
       options[:data]['ok-button-class'] = opts[:ok_button_class].presence
       options[:data]['original-content'] = html_escape(real_object.send(field)) if opts[:display_as] || opts[:display_with]
@@ -54,6 +54,9 @@ module BestInPlace
       if opts[:sanitize].presence.to_s == 'false'
         options[:data][:sanitize] = false
       end
+
+      #delete nil keys only
+      options[:data].delete_if {|k,v| v.nil?}
 
       content_tag(:span, options) do
         !options[:data][:sanitize] ? display_value : display_value.html_safe
@@ -114,7 +117,7 @@ module BestInPlace
       args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
                              :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
-                             :use_confirm, :sanitize, :helper_options, :url, :place_holder, :class, :as)
+                             :use_confirm, :sanitize, :helper_options, :url, :place_holder, :class, :as, :param)
 
       best_in_place_deprecated_options(args)
 
@@ -134,8 +137,13 @@ module BestInPlace
       end
 
       if deprecated_option = args.delete(:object_name)
+        args[:param] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :object_name is deprecated in favor of :param ')
+      end
+
+      if deprecated_option = args.delete(:type)
         args[:as] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :object_name is deprecated in favor of :as ')
+        ActiveSupport::Deprecation.warn('[Best_in_place] :type is deprecated in favor of :as ')
       end
 
       if deprecated_option = args.delete(:classes)

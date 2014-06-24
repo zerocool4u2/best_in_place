@@ -20,7 +20,7 @@ describe BestInPlace::Helper, type: :helper do
     it "should generate a proper id for namespaced models" do
       @car = Cuca::Car.create :model => "Ford"
 
-      nk = Nokogiri::HTML.parse(helper.best_in_place @car, :model, :path => helper.cuca_cars_path)
+      nk = Nokogiri::HTML.parse(helper.best_in_place @car, :model, url: helper.cuca_cars_path)
       span = nk.css("span")
       expect(span.attribute("id").value).to eq("best_in_place_cuca_car_#{@car.id}_model")
     end
@@ -49,7 +49,7 @@ describe BestInPlace::Helper, type: :helper do
 
       context "when it's not an AR model" do
         it "shold generate an html id without any id" do
-          nk = Nokogiri::HTML.parse(helper.best_in_place [1,2,3], :first, :path => @user)
+          nk = Nokogiri::HTML.parse(helper.best_in_place [1,2,3], :first, url: @user)
           span = nk.css("span")
           expect(span.attribute("id").value).to eq("best_in_place_array_first")
         end
@@ -104,21 +104,21 @@ describe BestInPlace::Helper, type: :helper do
         end
 
         it "should use the custom url specified in string format" do
-          out = helper.best_in_place @user, :name, :path => "/custom/path"
+          out = helper.best_in_place @user, :name, url: "/custom/path"
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
           expect(span.attribute("data-url").value).to eq("/custom/path")
         end
 
         it "should use the path given in a named_path format" do
-          out = helper.best_in_place @user, :name, :path => helper.users_path
+          out = helper.best_in_place @user, :name, url: helper.users_path
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
           expect(span.attribute("data-url").value).to eq("/users")
         end
 
         it "should use the given path in a hash format" do
-          out = helper.best_in_place @user, :name, :path => {:controller => :users, :action => :edit, :id => 23}
+          out = helper.best_in_place @user, :name, url: {:controller => :users, :action => :edit, :id => 23}
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
           expect(span.attribute("data-url").value).to eq("/users/23/edit")
@@ -196,7 +196,7 @@ describe BestInPlace::Helper, type: :helper do
 
       describe "object_name" do
         it "should change the data-object value" do
-          out = helper.best_in_place @user, :name, :object_name => "my_user"
+          out = helper.best_in_place @user, :name, param: "my_user"
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
           expect(span.attribute("data-object").value).to eq("my_user")
@@ -278,7 +278,7 @@ describe BestInPlace::Helper, type: :helper do
 
     context "with a date attribute" do
       before do
-        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :birth_date, :type => :date)
+        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :birth_date, as: :date)
         @span = nk.css("span")
       end
 
@@ -297,7 +297,7 @@ describe BestInPlace::Helper, type: :helper do
 
     context "with a boolean attribute" do
       before do
-        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, :type => :checkbox)
+        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox)
         @span = nk.css("span")
       end
 
@@ -316,7 +316,7 @@ describe BestInPlace::Helper, type: :helper do
 
       describe "custom collection" do
         before do
-          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, :type => :checkbox, :collection => ["Nain", "Da"])
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox, :collection => ["Nain", "Da"])
           @span = nk.css("span")
         end
 
@@ -334,7 +334,7 @@ describe BestInPlace::Helper, type: :helper do
     context "with a select attribute" do
       before do
         @countries = COUNTRIES.to_a
-        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, :type => :select, :collection => @countries)
+        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @countries)
         @span = nk.css("span")
       end
 
@@ -357,7 +357,7 @@ describe BestInPlace::Helper, type: :helper do
       context "with an apostrophe in it" do
         before do
           @apostrophe_countries = [[1, "Joe's Country"], [2, "Bob's Country"]]
-          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, :type => :select, :collection => @apostrophe_countries)
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @apostrophe_countries)
           @span = nk.css("span")
         end
 
