@@ -4,51 +4,64 @@ module BestInPlace
     def best_in_place(object, field, opts = {})
 
       best_in_place_assert_arguments(opts)
+      type = opts[:as] || :input
+      field = field.to_s
+
+      options={}
+      options[:data]= HashWithIndifferentAccess.new(opts[:data])
+      options[:data]['bip-type'] = type
+      options[:data]['bip-attribute'] = field
 
       real_object = best_in_place_real_object_for object
-      type = opts[:as] || :input
-      collection = Array(opts[:collection])
-      field = field.to_s
 
       display_value = best_in_place_build_value_for(real_object, field, opts)
 
-      value = nil
-      if type == :select && collection.any?
-        value = real_object.send(field)
-        display_value = Hash[opts[:collection]].stringify_keys[value.to_s]
-        collection = opts[:collection].to_json
+      value = real_object.send(field)
+
+      if opts[:collection] or type == :checkbox
+        collection = opts[:collection]
+        case type
+          when :checkbox
+            value = value.to_s
+            if collection.blank?
+              collection = best_in_place_default_collection
+            else
+              collection = best_in_place_collection_builder(collection)
+            end
+            display_value = collection[value]
+            collection = collection.to_json
+          else # :select
+            collection = best_in_place_collection_builder(collection)
+            display_value = collection[value]
+            collection = collection.to_json
+        end
+        options[:data]['bip-collection'] = html_escape(collection)
       end
-      if type == :checkbox
-        value = !!real_object.send(field)
-        collection = %w(No Yes) if collection.blank?
-        display_value = value ? collection.last : collection.first
-        collection = collection.to_json
-      end
-      options={}
+
       options[:class] = ['best_in_place'] + Array(opts[:class] || opts[:classes])
       options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
-      options[:data]= HashWithIndifferentAccess.new(opts[:data])
 
-      options[:data]['attribute'] = field
-      options[:data]['activator'] = opts[:activator].presence
-      options[:data]['cancel-button'] = opts[:cancel_button].presence
-      options[:data]['cancel-button-class'] = opts[:cancel_button_class].presence
-      options[:data]['collection'] = html_escape(collection) unless collection.blank?
-      options[:data]['html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
-      options[:data]['inner-class'] = opts[:inner_class].presence
 
-      options[:data]['nil'] = html_escape(opts[:place_holder]).presence
+      options[:data]['bip-activator'] = opts[:activator].presence
 
-      options[:data]['object'] = opts[:param] || BestInPlace::Utils.object_to_key(real_object)
-      options[:data]['ok-button'] = opts[:ok_button].presence
-      options[:data]['ok-button-class'] = opts[:ok_button_class].presence
-      options[:data]['original-content'] = html_escape(real_object.send(field)) if opts[:display_as] || opts[:display_with]
-      options[:data]['type'] = type
 
-      options[:data]['url'] = url_for(opts[:url] || object)
+      options[:data]['bip-html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
+      options[:data]['bip-inner-class'] = opts[:inner_class].presence
 
-      options[:data]['use-confirm'] = opts[:use_confirm].presence
-      options[:data]['value'] = html_escape(value) if value
+      options[:data]['bip-placeholder'] = html_escape(opts[:place_holder]).presence
+
+      options[:data]['bip-object'] = opts[:param] || BestInPlace::Utils.object_to_key(real_object)
+      options[:data]['bip-ok-button'] = opts[:ok_button].presence
+      options[:data]['bip-ok-button-class'] = opts[:ok_button_class].presence
+      options[:data]['bip-cancel-button'] = opts[:cancel_button].presence
+      options[:data]['bip-cancel-button-class'] = opts[:cancel_button_class].presence
+      options[:data]['bip-original-content'] = html_escape(value).presence
+
+
+      options[:data]['bip-url'] = url_for(opts[:url] || object)
+
+      options[:data]['bip-confirm'] = opts[:confirm].presence
+      options[:data]['bip-value'] = html_escape(value).presence
 
 
       if opts[:sanitize].presence.to_s == 'false'
@@ -56,7 +69,7 @@ module BestInPlace
       end
 
       #delete nil keys only
-      options[:data].delete_if {|k,v| v.nil?}
+      options[:data].delete_if { |k, v| v.nil? }
 
       content_tag(:span, options) do
         !options[:data][:sanitize] ? display_value : display_value.html_safe
@@ -80,11 +93,7 @@ module BestInPlace
     private
 
     def best_in_place_build_value_for(object, field, opts)
-      klass = if object.respond_to?(:id)
-                "#{object.class}_#{object.id}"
-              else
-                object.class.to_s
-              end
+      klass = object.class
 
       if opts[:display_as]
         BestInPlace::DisplayMethods.add_model_method(klass, field, opts[:display_as])
@@ -121,7 +130,7 @@ module BestInPlace
       args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
                              :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
-                             :use_confirm, :sanitize, :helper_options, :url, :place_holder, :class, :as, :param)
+                             :use_confirm, :confirm, :sanitize, :helper_options, :url, :place_holder, :class, :as, :param)
 
       best_in_place_deprecated_options(args)
 
@@ -160,6 +169,25 @@ module BestInPlace
         ActiveSupport::Deprecation.warn('[Best_in_place] :nil is deprecated in favor of :place_holder ')
       end
 
+      if deprecated_option = args.delete(:use_confirm)
+        args[:confirm] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :use_confirm is deprecated in favor of :confirm ')
+      end
+
+    end
+
+    def best_in_place_collection_builder(collection)
+      case collection
+        when Array
+          Hash[collection.collect { |x| [x.to_s, x.to_s] }]
+        else
+          collection.stringify_keys
+      end
+    end
+
+    def best_in_place_default_collection
+      {'true' => t(:'best_in_place.yes', default: 'Yes'),
+       'false' => t(:'best_in_place.no', default: 'No')}
     end
   end
 end

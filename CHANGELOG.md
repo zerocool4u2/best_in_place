@@ -6,10 +6,13 @@
   - Deprecated option[:nil] in favor of option[:place_holder]
   - Deprecated option[:classes] in favor of option[:class]
   - Deprecated opts[:object_name] in favor of option[:as]
+  - Deprecated opts[:use_confirm] in favor of option[:confirm]
   - Deprecated Elastic jQuery plugin in favor of jQuery Autosize
   - Fixed bug in jquery.purr
   - Support all supported version of actionpack/rails
   - Dropped dependency on jquery gem
+  - Namespaced all data attributes to avoid conflict.
+  - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js
 
 - v.2x : glitch in the Matrix
 

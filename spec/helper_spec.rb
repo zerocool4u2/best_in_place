@@ -37,6 +37,7 @@ describe BestInPlace::Helper, type: :helper do
 
     describe "general properties" do
       before do
+        @user.save
         nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
         @span = nk.css("span")
       end
@@ -47,52 +48,44 @@ describe BestInPlace::Helper, type: :helper do
         end
       end
 
-      context "when it's not an AR model" do
-        it "shold generate an html id without any id" do
-          nk = Nokogiri::HTML.parse(helper.best_in_place [1,2,3], :first, url: @user)
-          span = nk.css("span")
-          expect(span.attribute("id").value).to eq("best_in_place_array_first")
-        end
-      end
-
       it "should have the best_in_place class" do
         expect(@span.attribute("class").value).to eq("best_in_place")
       end
 
-      it "should have the correct data-attribute" do
-        expect(@span.attribute("data-attribute").value).to eq("name")
+      it "should have the correct data-bip-attribute" do
+        expect(@span.attribute("data-bip-attribute").value).to eq("name")
       end
 
-      it "should have the correct data-object" do
-        expect(@span.attribute("data-object").value).to eq("user")
+      it "should have the correct data-bip-object" do
+        expect(@span.attribute("data-bip-object").value).to eq("user")
       end
 
       it "should have no activator by default" do
-        expect(@span.attribute("data-activator")).to be_nil
+        expect(@span.attribute("data-bip-activator")).to be_nil
       end
 
       it "should have no OK button text by default" do
-        expect(@span.attribute("data-ok-button")).to be_nil
+        expect(@span.attribute("data-bip-ok-button")).to be_nil
       end
 
       it "should have no OK button class by default" do
-        expect(@span.attribute("data-ok-button-class")).to be_nil
+        expect(@span.attribute("data-bip-ok-button-class")).to be_nil
       end
 
       it "should have no Cancel button text by default" do
-        expect(@span.attribute("data-cancel-button")).to be_nil
+        expect(@span.attribute("data-bip-cancel-button")).to be_nil
       end
 
       it "should have no Cancel button class by default" do
-        expect(@span.attribute("data-cancel-button-class")).to be_nil
+        expect(@span.attribute("data-bip-cancel-button-class")).to be_nil
       end
 
       it "should have no Use-Confirmation dialog option by default" do
-        expect(@span.attribute("data-use-confirm")).to be_nil
+        expect(@span.attribute("data-bip-confirm")).to be_nil
       end
 
       it "should have no inner_class by default" do
-        expect(@span.attribute("data-inner-class")).to be_nil
+        expect(@span.attribute("data-bip-inner-class")).to be_nil
       end
 
       describe "url generation" do
@@ -100,45 +93,45 @@ describe BestInPlace::Helper, type: :helper do
           @user.save!
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
           span = nk.css("span")
-          expect(span.attribute("data-url").value).to eq("/users/#{@user.id}")
+          expect(span.attribute("data-bip-url").value).to eq("/users/#{@user.id}")
         end
 
         it "should use the custom url specified in string format" do
           out = helper.best_in_place @user, :name, url: "/custom/path"
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
-          expect(span.attribute("data-url").value).to eq("/custom/path")
+          expect(span.attribute("data-bip-url").value).to eq("/custom/path")
         end
 
         it "should use the path given in a named_path format" do
           out = helper.best_in_place @user, :name, url: helper.users_path
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
-          expect(span.attribute("data-url").value).to eq("/users")
+          expect(span.attribute("data-bip-url").value).to eq("/users")
         end
 
         it "should use the given path in a hash format" do
           out = helper.best_in_place @user, :name, url: {:controller => :users, :action => :edit, :id => 23}
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
-          expect(span.attribute("data-url").value).to eq("/users/23/edit")
+          expect(span.attribute("data-bip-url").value).to eq("/users/23/edit")
         end
       end
 
       describe "nil option" do
         it "should have no nil data by default" do
-          expect(@span.attribute("data-nil")).to be_nil
+          expect(@span.attribute("data-bip-placeholder")).to be_nil
         end
 
         it "should show '' if the object responds with nil for the passed attribute" do
-          expect(@user).to receive(:name).and_return("")
+          expect(@user).to receive(:name).twice.and_return("")
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
           span = nk.css("span")
           expect(span.text).to eq("")
         end
 
         it "should show '' if the object responds with an empty string for the passed attribute" do
-          expect(@user).to receive(:name).and_return("")
+          expect(@user).to receive(:name).twice.and_return("")
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
           span = nk.css("span")
           expect(span.text).to eq("")
@@ -149,57 +142,57 @@ describe BestInPlace::Helper, type: :helper do
         out = helper.best_in_place @user, :name, :inner_class => "awesome"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-inner-class").value).to eq("awesome")
+        expect(span.attribute("data-bip-inner-class").value).to eq("awesome")
       end
 
       it "should have the given activator" do
         out = helper.best_in_place @user, :name, :activator => "awesome"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-activator").value).to eq("awesome")
+        expect(span.attribute("data-bip-activator").value).to eq("awesome")
       end
 
       it "should have the given OK button text" do
         out = helper.best_in_place @user, :name, :ok_button => "okay"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-ok-button").value).to eq("okay")
+        expect(span.attribute("data-bip-ok-button").value).to eq("okay")
       end
 
       it "should have the given OK button class" do
         out = helper.best_in_place @user, :name, :ok_button => "okay", :ok_button_class => "okay-class"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-ok-button-class").value).to eq("okay-class")
+        expect(span.attribute("data-bip-ok-button-class").value).to eq("okay-class")
       end
 
       it "should have the given Cancel button text" do
         out = helper.best_in_place @user, :name, :cancel_button => "nasty"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-cancel-button").value).to eq("nasty")
+        expect(span.attribute("data-bip-cancel-button").value).to eq("nasty")
       end
 
       it "should have the given Cancel button class" do
         out = helper.best_in_place @user, :name, :cancel_button => "nasty", :cancel_button_class => "nasty-class"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-cancel-button-class").value).to eq("nasty-class")
+        expect(span.attribute("data-bip-cancel-button-class").value).to eq("nasty-class")
       end
 
       it "should have the given Use-Confirmation dialog option" do
-        out = helper.best_in_place @user, :name, :use_confirm => "false"
+        out = helper.best_in_place @user, :name, :confirm => "false"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
-        expect(span.attribute("data-use-confirm").value).to eq("false")
+        expect(span.attribute('data-bip-confirm').value).to eq('false')
       end
 
       describe "object_name" do
-        it "should change the data-object value" do
+        it "should change the data-bip-object value" do
           out = helper.best_in_place @user, :name, param: "my_user"
           nk = Nokogiri::HTML.parse(out)
           span = nk.css("span")
-          expect(span.attribute("data-object").value).to eq("my_user")
+          expect(span.attribute("data-bip-object").value).to eq("my_user")
         end
       end
 
@@ -267,12 +260,12 @@ describe BestInPlace::Helper, type: :helper do
         expect(@span.text).to eq("Lucia")
       end
 
-      it "should have an input data-type" do
-        expect(@span.attribute("data-type").value).to eq("input")
+      it 'should have an input data-bip-type' do
+        expect(@span.attribute('data-bip-type').value).to eq('input')
       end
 
-      it "should have no data-collection" do
-        expect(@span.attribute("data-collection")).to be_nil
+      it 'should have no data-bip-collection' do
+        expect(@span.attribute('data-bip-collection')).to be_nil
       end
     end
 
@@ -286,12 +279,12 @@ describe BestInPlace::Helper, type: :helper do
         expect(@span.text).to eq(@user.birth_date.to_date.to_s)
       end
 
-      it "should have a date data-type" do
-        expect(@span.attribute("data-type").value).to eq("date")
+      it "should have a date data-bip-type" do
+        expect(@span.attribute("data-bip-type").value).to eq("date")
       end
 
-      it "should have no data-collection" do
-        expect(@span.attribute("data-collection")).to be_nil
+      it "should have no data-bip-collection" do
+        expect(@span.attribute("data-bip-collection")).to be_nil
       end
     end
 
@@ -301,13 +294,12 @@ describe BestInPlace::Helper, type: :helper do
         @span = nk.css("span")
       end
 
-      it "should have a checkbox data-type" do
-        expect(@span.attribute("data-type").value).to eq("checkbox")
+      it "should have a checkbox data-bip-type" do
+        expect(@span.attribute("data-bip-type").value).to eq("checkbox")
       end
 
-      it "should have the default data-collection" do
-        data = ["No", "Yes"]
-        expect(@span.attribute("data-collection").value).to eq(data.to_json)
+      it "should have the default data-bip-collection" do
+        expect(@span.attribute("data-bip-collection").value).to eq("{\"true\":\"Yes\",\"false\":\"No\"}")
       end
 
       it "should render the current option as No" do
@@ -316,7 +308,8 @@ describe BestInPlace::Helper, type: :helper do
 
       describe "custom collection" do
         before do
-          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox, :collection => ["Nain", "Da"])
+          @collection = {'false' => 'Nain', 'true' => 'Da'}
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox, collection: @collection)
           @span = nk.css("span")
         end
 
@@ -324,8 +317,8 @@ describe BestInPlace::Helper, type: :helper do
           expect(@span.text).to eq("Nain")
         end
 
-        it "should render the proper data-collection" do
-          expect(@span.attribute("data-collection").value).to eq(["Nain", "Da"].to_json)
+        it "should render the proper data-bip-collection" do
+          expect(@span.attribute("data-bip-collection").value).to eq(@collection.to_json)
         end
       end
 
@@ -333,36 +326,36 @@ describe BestInPlace::Helper, type: :helper do
 
     context "with a select attribute" do
       before do
-        @countries = COUNTRIES.to_a
+        @countries = COUNTRIES
         nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @countries)
         @span = nk.css("span")
       end
 
-      it "should have a select data-type" do
-        expect(@span.attribute("data-type").value).to eq("select")
+      it 'should have a select data-bip-type' do
+        expect(@span.attribute('data-bip-type').value).to eq('select')
       end
 
       it "should have a proper data collection" do
-        expect(@span.attribute("data-collection").value).to eq(@countries.to_json)
+        expect(@span.attribute('data-bip-collection').value).to eq(@countries.to_json)
       end
 
       it "should show the current country" do
         expect(@span.text).to eq("Italy")
       end
 
-      it "should include the proper data-value" do
-        expect(@span.attribute("data-value").value).to eq("2")
+      it 'should include the proper data-bip-value' do
+        expect(@span.attribute('data-bip-value').value).to eq('2')
       end
 
       context "with an apostrophe in it" do
         before do
-          @apostrophe_countries = [[1, "Joe's Country"], [2, "Bob's Country"]]
+          @apostrophe_countries = {1=> "Joe's Country", 2 => "Bob's Country"}
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @apostrophe_countries)
           @span = nk.css("span")
         end
 
         it "should have a proper data collection" do
-          expect(@span.attribute("data-collection").value).to eq(@apostrophe_countries.to_json)
+          expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries.to_json)
         end
       end
     end

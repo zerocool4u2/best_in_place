@@ -11,7 +11,6 @@ describe "JS behaviour", :js => true do
       :country => "2",
       :receive_email => false,
       :birth_date => Time.now.utc,
-      :description => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a lectus et lacus ultrices auctor. Morbi aliquet convallis tincidunt. Praesent enim libero, iaculis at commodo nec, fermentum a dolor. Quisque eget eros id felis lacinia faucibus feugiat et ante. Aenean justo nisi, aliquam vel egestas vel, porta in ligula. Etiam molestie, lacus eget tincidunt accumsan, elit justo rhoncus urna, nec pretium neque mi et lorem. Aliquam posuere, dolor quis pulvinar luctus, felis dolor tincidunt leo, eget pretium orci purus ac nibh. Ut enim sem, suscipit ac elementum vitae, sodales vel sem.",
       :money => 100,
       :money_proc => 100,
       :favorite_color => 'Red',
@@ -137,7 +136,6 @@ describe "JS behaviour", :js => true do
       :description => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a lectus et lacus ultrices auctor. Morbi aliquet convallis tincidunt. Praesent enim libero, iaculis at commodo nec, fermentum a dolor. Quisque eget eros id felis lacinia faucibus feugiat et ante. Aenean justo nisi, aliquam vel egestas vel, porta in ligula. Etiam molestie, lacus eget tincidunt accumsan, elit justo rhoncus urna, nec pretium neque mi et lorem. Aliquam posuere, dolor quis pulvinar luctus, felis dolor tincidunt leo, eget pretium orci purus ac nibh. Ut enim sem, suscipit ac elementum vitae, sodales vel sem."
 
     visit users_path
-
     within("tr#user_#{@user.id} > .name > span") do
       expect(page).to have_content("Lucia")
       expect(page).to have_xpath("//a[contains(@href,'#{user_path(@user)}')]")
@@ -854,7 +852,6 @@ describe "JS behaviour", :js => true do
           JS
 
           sleep 1
-
           text = page.find("##{id} input").value
           expect(text).to eq("40")
         end

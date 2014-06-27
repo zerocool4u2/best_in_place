@@ -5,8 +5,8 @@
 	license: http://www.opensource.org/licenses/mit-license.php
 */
 (function ($) {
-	var
-	defaults = {
+    'use strict';
+	var	defaults = {
 		className: 'autosizejs',
 		id: 'autosizejs',
 		append: '\n',

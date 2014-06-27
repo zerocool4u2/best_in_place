@@ -1,4 +1,7 @@
-require 'action_view'
+require 'rails'
+require 'action_view/railtie'
+require 'active_record/railtie'
+require 'action_controller/model_naming'
 require 'best_in_place/engine'
 require "best_in_place/utils"
 require "best_in_place/helper"
