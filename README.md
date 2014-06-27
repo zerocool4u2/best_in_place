@@ -27,7 +27,7 @@ The editor works by PUTting the updated value to the server and GETting the upda
 - Allows external activator
 - Allows optional, configurable OK and Cancel buttons for inputs and textareas
 - ESC key destroys changes (requires user confirmation)
-- Autogrowing textarea
+- Autogrowing textarea with **jQuery Autosize**
 - Helper for generating the best_in_place field only if a condition is satisfied
 - Provided test helpers to be used in your integration specs
 - Custom display methods using a method from your model or an existing rails

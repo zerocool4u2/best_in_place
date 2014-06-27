@@ -2,11 +2,12 @@
 
 - v.3.0.0 :
   - Expect syntax for spec
-  - Deprecated option[:path] in favor of option[:url] 
-  - Deprecated option[:nil] in favor of option[:place_holder] 
-  - Deprecated option[:classes] in favor of option[:class] 
-  - Deprecated opts[:object_name] in favor of option[:as] 
-  - Fixed bug in jquery.purr 
+  - Deprecated option[:path] in favor of option[:url]
+  - Deprecated option[:nil] in favor of option[:place_holder]
+  - Deprecated option[:classes] in favor of option[:class]
+  - Deprecated opts[:object_name] in favor of option[:as]
+  - Deprecated Elastic jQuery plugin in favor of jQuery Autosize
+  - Fixed bug in jquery.purr
   - Support all supported version of actionpack/rails
   - Dropped dependency on jquery gem
 
