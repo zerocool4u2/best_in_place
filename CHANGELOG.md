@@ -13,6 +13,10 @@
   - Dropped dependency on jquery gem
   - Namespaced all data attributes to avoid conflict.
   - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js
+  - Replaced default method to PATCH instead of PUT
+  - Added BestInPlaceEditor.defaults
+  - Deprecated opts[:sanitize] in favor of option[:raw]
+  
 
 - v.2x : glitch in the Matrix
 

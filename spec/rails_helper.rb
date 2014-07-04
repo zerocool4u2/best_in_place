@@ -1,8 +1,8 @@
 ENV['RAILS_ENV'] ||= 'test'
 
-require 'byebug'
 require 'combustion'
 require 'capybara/rspec'
+require 'best_in_place'
 
 Combustion.initialize! :active_record, :action_controller,
                        :action_view, :sprockets

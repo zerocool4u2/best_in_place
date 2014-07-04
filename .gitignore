@@ -3,7 +3,7 @@
 .idea
 pkg/*
 
-Gemfile.lock
+*.lock
 spec/internal/.bundle
 spec/internal/db/*.sqlite3
 spec/internal/log/*.log

@@ -45,7 +45,6 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    puts params
     @user = User.find(params[:id])
 
     respond_to do |format|

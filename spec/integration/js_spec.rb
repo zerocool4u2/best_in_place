@@ -5,7 +5,7 @@ describe "JS behaviour", :js => true do
     @user = User.new :name => "Lucia",
       :last_name => "Napoli",
       :email => "lucianapoli@gmail.com",
-      :height => "5' 5\"",
+      :height => "h51",
       :address => "Via Roma 99",
       :zip => "25123",
       :country => "2",
@@ -20,7 +20,7 @@ describe "JS behaviour", :js => true do
   end
 
   describe "namespaced controllers" do
-    xit "should be able to use array-notation to describe both object and path" do
+    it "should be able to use array-notation to describe both object and path" do
       @user.save!
       visit admin_user_path(@user)
 
@@ -38,7 +38,7 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       within("#name") do
-        expect(page).to have_content("\u2014")
+        expect(page).to have_content('-')
       end
     end
 
@@ -50,7 +50,7 @@ describe "JS behaviour", :js => true do
       bip_text @user, :money, "abcd"
 
       within("#money") do
-        expect(page).to have_content("\u2014")
+        expect(page).to have_content('-')
       end
     end
 
@@ -64,16 +64,16 @@ describe "JS behaviour", :js => true do
       end
     end
 
-    it "should render html content for nil option" do
+    it 'should render html content for placeholder option' do
       @user.favorite_color = ""
       @user.save!
       visit user_path(@user)
       within("#favorite_color") do
-        expect(page).to have_xpath("//span[@class='nil']")
+        expect(page).to have_xpath("//span[@class='placeholder']")
       end
     end
 
-    it "should render html content for nil option after edit" do
+    it 'should render html content for placeholder option after edit' do
       @user.favorite_color = "Blue"
       @user.save!
       visit user_path(@user)
@@ -81,7 +81,7 @@ describe "JS behaviour", :js => true do
       bip_text @user, :favorite_color, ""
 
       within("#favorite_color") do
-        expect(page).to have_xpath("//span[@class='nil']")
+        expect(page).to have_xpath("//span[@class='placeholder']")
       end
     end
 
@@ -470,7 +470,6 @@ describe "JS behaviour", :js => true do
       $("##{id} textarea").val('1Q84');
       $("##{id} input[type='button']").click();
     JS
-    page.driver.browser.switch_to.alert.accept
 
     visit user_path(@user)
     within("#favorite_books") do
@@ -494,7 +493,6 @@ describe "JS behaviour", :js => true do
       $("##{id} textarea").blur();
     JS
     sleep 1 # Increase if browser is slow
-    page.driver.browser.switch_to.alert.accept
 
     visit user_path(@user)
     within("#favorite_books") do
@@ -636,12 +634,12 @@ describe "JS behaviour", :js => true do
     it "should quote properly the data-original-content attribute" do
       @user.address = "A's & B's"
       @user.save!
+
       retry_on_timeout do
         visit user_path(@user)
-
         id = BestInPlace::Utils.build_best_in_place_id @user, :address
 
-        text = page.find("##{id}")["data-original-content"]
+        text = page.find("##{id}")['data-bip-original-content']
         expect(text).to eq("A's & B's")
       end
     end
@@ -654,7 +652,7 @@ describe "JS behaviour", :js => true do
 
       visit user_path(@user)
 
-      within("#dw_description") { expect(page).to have_content("\u2014") }
+      within("#dw_description") { expect(page).to have_content('-') }
     end
 
     it "should render the money using number_to_currency" do
@@ -878,7 +876,7 @@ describe "JS behaviour", :js => true do
     end
   end
 
-  it "should allow me to set texts with quotes with sanitize => false" do
+  it 'should texts with quotes with raw => true' do
     @user.save!
 
     retry_on_timeout do
@@ -891,7 +889,7 @@ describe "JS behaviour", :js => true do
     end
   end
 
-  it "should show the input with not-scaped ampersands with sanitize => false" do
+  it "should show the input with not-scaped ampersands with raw => true" do
     @user.description = "A text with an & and a <b>Raw html</b>"
     @user.save!
 

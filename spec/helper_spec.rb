@@ -88,6 +88,11 @@ describe BestInPlace::Helper, type: :helper do
         expect(@span.attribute("data-bip-inner-class")).to be_nil
       end
 
+
+      it "should have be raw by default" do
+        expect(@span.attribute("data-bip-raw")).to be_nil
+      end
+
       describe "url generation" do
         it "should have the correct default url" do
           @user.save!
@@ -180,11 +185,18 @@ describe BestInPlace::Helper, type: :helper do
         expect(span.attribute("data-bip-cancel-button-class").value).to eq("nasty-class")
       end
 
-      it "should have the given Use-Confirmation dialog option" do
+      it 'should have the given Confirmation dialog option' do
         out = helper.best_in_place @user, :name, :confirm => "false"
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
         expect(span.attribute('data-bip-confirm').value).to eq('false')
+      end
+
+      it "should be raw" do
+        out = helper.best_in_place @user, :name, raw: true
+        nk = Nokogiri::HTML.parse(out)
+        span = nk.css("span")
+        expect(span.attribute('data-bip-raw').value).to eq('true')
       end
 
       describe "object_name" do
