@@ -1,82 +1,75 @@
 module BestInPlace
-  module BestInPlaceHelpers
-
+  module Helper
     def best_in_place(object, field, opts = {})
-      if opts[:display_as] && opts[:display_with]
-        raise ArgumentError, "Can't use both 'display_as' and 'display_with' options at the same time"
-      end
+      best_in_place_assert_arguments(opts)
+      type = opts[:as] || :input
+      field = field.to_s
 
-      if opts[:display_with] && !opts[:display_with].is_a?(Proc) && !ViewHelpers.respond_to?(opts[:display_with])
-        raise ArgumentError, "Can't find helper #{opts[:display_with]}"
-      end
+      options = {}
+      options[:data] = HashWithIndifferentAccess.new(opts[:data])
+      options[:data]['bip-type'] = type
+      options[:data]['bip-attribute'] = field
 
       real_object = best_in_place_real_object_for object
-      opts[:type] ||= :input
-      opts[:collection] ||= []
-      field = field.to_s
 
       display_value = best_in_place_build_value_for(real_object, field, opts)
 
-      collection = nil
-      value = nil
-      if opts[:type] == :select && !opts[:collection].blank?
-        value = real_object.send(field)
-        display_value = Hash[opts[:collection]].stringify_keys[value.to_s]
-        collection = opts[:collection].to_json
-      end
-      if opts[:type] == :checkbox
-        value = !!real_object.send(field)
-        if opts[:collection].blank? || opts[:collection].size != 2
-          opts[:collection] = ["No", "Yes"]
+      value = real_object.send(field)
+
+      if opts[:collection] or type == :checkbox
+        collection = opts[:collection]
+        case type
+          when :checkbox
+            value = value.to_s
+            if collection.blank?
+              collection = best_in_place_default_collection
+            else
+              collection = best_in_place_collection_builder(collection)
+            end
+            display_value = collection[value]
+            collection = collection.to_json
+          else # :select
+            collection = best_in_place_collection_builder(collection)
+            display_value = collection[value]
+            collection = collection.to_json
         end
-        display_value = value ? opts[:collection][1] : opts[:collection][0]
-        collection = opts[:collection].to_json
-      end
-      classes = ["best_in_place"]
-      unless opts[:classes].nil?
-        # the next three lines enable this opt to handle both a stings and a arrays
-        classes << opts[:classes]
-        classes.flatten!
+        options[:data]['bip-collection'] = html_escape(collection)
       end
 
-      out = "<span class='#{classes.join(" ")}'"
-      out << " id='#{ opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)}'"
-      out << " data-url='#{url_for(opts[:path] || object) }'"
-      out << " data-object='#{opts[:object_name] || BestInPlace::Utils.object_to_key(real_object)}'"
-      out << " data-collection='#{best_in_place_attribute_escape(collection)}'" unless collection.blank?
-      out << " data-attribute='#{field}'"
-      out << " data-activator='#{opts[:activator]}'" unless opts[:activator].blank?
-      out << " data-ok-button='#{opts[:ok_button]}'" unless opts[:ok_button].blank?
-      out << " data-ok-button-class='#{opts[:ok_button_class]}'" unless opts[:ok_button_class].blank?
-      out << " data-cancel-button='#{opts[:cancel_button]}'" unless opts[:cancel_button].blank?
-      out << " data-cancel-button-class='#{opts[:cancel_button_class]}'" unless opts[:cancel_button_class].blank?
-      out << " data-nil='#{best_in_place_attribute_escape(opts[:nil])}'" unless opts[:nil].blank?
-      out << " data-use-confirm='#{opts[:use_confirm]}'" unless opts[:use_confirm].nil?
-      out << " data-type='#{opts[:type]}'"
-      out << " data-inner-class='#{opts[:inner_class]}'" if opts[:inner_class]
-      out << " data-html-attrs='#{opts[:html_attrs].to_json}'" unless opts[:html_attrs].blank?
-      out << " data-original-content='#{best_in_place_attribute_escape(real_object.send(field))}'" if opts[:display_as] || opts[:display_with]
-      out << " data-value='#{best_in_place_attribute_escape(value)}'" if value
+      options[:class] = ['best_in_place'] + Array(opts[:class] || opts[:classes])
+      options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
 
-      if opts[:data] && opts[:data].is_a?(Hash)
-        opts[:data].each do |k, v|
-          if !v.is_a?(String) && !v.is_a?(Symbol)
-            v = v.to_json
-          end
-          out << %( data-#{k.to_s.dasherize}='#{v}')
-        end
+      options[:data]['bip-activator'] = opts[:activator].presence
+
+      options[:data]['bip-html-attrs'] = opts[:html_attrs].to_json unless opts[:html_attrs].blank?
+      options[:data]['bip-inner-class'] = opts[:inner_class].presence
+
+      options[:data]['bip-placeholder'] = html_escape(opts[:place_holder]).presence
+
+      options[:data]['bip-object'] = opts[:param] || BestInPlace::Utils.object_to_key(real_object)
+      options[:data]['bip-ok-button'] = opts[:ok_button].presence
+      options[:data]['bip-ok-button-class'] = opts[:ok_button_class].presence
+      options[:data]['bip-cancel-button'] = opts[:cancel_button].presence
+      options[:data]['bip-cancel-button-class'] = opts[:cancel_button_class].presence
+      options[:data]['bip-original-content'] = html_escape(value).presence
+
+      options[:data]['bip-url'] = url_for(opts[:url] || object)
+
+      options[:data]['bip-confirm'] = opts[:confirm].presence
+      options[:data]['bip-value'] = html_escape(value).presence
+
+      if opts[:raw]
+        options[:data]['bip-raw'] = 'true'
       end
-      if !opts[:sanitize].nil? && !opts[:sanitize]
-        out << " data-sanitize='false'>"
-        out << display_value.to_s
-      else
-        out << ">#{h(display_value.to_s)}"
+
+      # delete nil keys only
+      options[:data].delete_if { |_, v| v.nil? }
+      content_tag(:span, options) do
+        opts[:raw].present? ? display_value.to_s.html_safe : display_value
       end
-      out << "</span>"
-      raw out
     end
 
-    def best_in_place_if(condition, object, field, opts={})
+    def best_in_place_if(condition, object, field, opts = {})
       if condition
         best_in_place(object, field, opts)
       else
@@ -84,22 +77,14 @@ module BestInPlace
       end
     end
 
-    def best_in_place_unless(condition, object, field, opts={})
-      best_in_place_if(!condition, object, field, opts={} )
+    def best_in_place_unless(condition, object, field, opts = {})
+      best_in_place_if(!condition, object, field, opts)
     end
-
 
     private
 
     def best_in_place_build_value_for(object, field, opts)
-      return "" if object.send(field).blank?
-
-      klass = if object.respond_to?(:id)
-                "#{object.class}_#{object.id}"
-              else
-                object.class.to_s
-              end
-
+      klass = object.class
       if opts[:display_as]
         BestInPlace::DisplayMethods.add_model_method(klass, field, opts[:display_as])
         object.send(opts[:display_as]).to_s
@@ -113,7 +98,15 @@ module BestInPlace
         if opts[:helper_options]
           BestInPlace::ViewHelpers.send(opts[:display_with], object.send(field), opts[:helper_options])
         else
-          BestInPlace::ViewHelpers.send(opts[:display_with], object.send(field))
+          field_value = object.send(field)
+
+          if field_value.blank?
+            ''
+          else
+
+
+            BestInPlace::ViewHelpers.send(opts[:display_with], field_value)
+          end
         end
 
       else
@@ -121,20 +114,76 @@ module BestInPlace
       end
     end
 
-    def best_in_place_attribute_escape(data)
-      return unless data
-
-      data.to_s.
-          gsub("&", "&amp;").
-          gsub("'", "&apos;").
-          gsub(/\r?\n/, "&#10;")
-    end
-
     def best_in_place_real_object_for(object)
       (object.is_a?(Array) && object.last.class.respond_to?(:model_name)) ? object.last : object
     end
+
+    def best_in_place_assert_arguments(args)
+      args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
+                             :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
+                             :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
+                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, :as, :param)
+
+      best_in_place_deprecated_options(args)
+
+      if args[:display_as] && args[:display_with]
+        fail ArgumentError, 'Can`t use both `display_as`` and `display_with` options at the same time'
+      end
+
+      if args[:display_with] && !args[:display_with].is_a?(Proc) && !ViewHelpers.respond_to?(args[:display_with])
+        fail ArgumentError, "Can't find helper #{args[:display_with]}"
+      end
+    end
+
+    def best_in_place_deprecated_options(args)
+      if deprecated_option = args.delete(:path)
+        args[:url] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :path is deprecated in favor of :url ')
+      end
+
+      if deprecated_option = args.delete(:object_name)
+        args[:param] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :object_name is deprecated in favor of :param ')
+      end
+
+      if deprecated_option = args.delete(:type)
+        args[:as] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :type is deprecated in favor of :as ')
+      end
+
+      if deprecated_option = args.delete(:classes)
+        args[:class] = deprecated_option
+        AActiveSupport::Deprecation.warn('[Best_in_place] :classes is deprecated in favor of :class ')
+      end
+
+      if deprecated_option = args.delete(:nil)
+        args[:place_holder] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :nil is deprecated in favor of :place_holder ')
+      end
+
+      if deprecated_option = args.delete(:use_confirm)
+        args[:confirm] = deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :use_confirm is deprecated in favor of :confirm ')
+      end
+
+      if deprecated_option = args.delete(:sanitize)
+        args[:raw] = !deprecated_option
+        ActiveSupport::Deprecation.warn('[Best_in_place] :sanitize is deprecated in favor of :raw ')
+      end
+    end
+
+    def best_in_place_collection_builder(collection)
+      case collection
+        when Array
+          Hash[collection.map { |x| [x.to_s, x.to_s] }]
+        else
+          collection.stringify_keys
+      end
+    end
+
+    def best_in_place_default_collection
+      {'true' => t(:'best_in_place.yes', default: 'Yes'),
+       'false' => t(:'best_in_place.no', default: 'No')}
+    end
   end
 end
-
-
-

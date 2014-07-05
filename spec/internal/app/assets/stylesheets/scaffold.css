@@ -55,6 +55,6 @@ div.field, div.actions {
   list-style: square;
 }
 
-span.nil {
+span.placeholder {
   color: #999;
 }

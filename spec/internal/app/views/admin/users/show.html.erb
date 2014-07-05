@@ -12,7 +12,7 @@
     <tr>
       <td>Last Name</td>
       <td id="last_name">
-        <%= best_in_place [:admin, @user], :last_name, :nil => "Nothing to show" %>
+        <%= best_in_place [:admin, @user], :last_name, place_holder: 'Nothing to show' %>
       </td>
     </tr>
   </table>

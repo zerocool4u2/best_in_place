@@ -1,22 +1,29 @@
 module BestInPlace
-  module Utils
+  module Utils #:nodoc:
     module_function
-
     def build_best_in_place_id(object, field)
       case object
-      when Symbol, String
-        "best_in_place_#{object}_#{field}"
-      else
-        id = "best_in_place_#{object_to_key(object)}"
-        id << "_#{object.id}" if object.class.ancestors.include?(ActiveModel::Serializers::JSON)
-        id << "_#{field}"
-        id
+        when Symbol, String
+          "best_in_place_#{object}_#{field}"
+        else
+          id = "best_in_place_#{object_to_key(object)}"
+          id << "_#{object.id}" if object.persisted?
+          id << "_#{field}"
+          id
       end
     end
 
     def object_to_key(object)
-      return object.class.to_s.underscore unless object.class.respond_to?(:model_name)
-      ActiveModel::Naming.param_key(object.class)
+      model_name_from_record_or_class(object).param_key
     end
+
+    def convert_to_model(object)
+      object.respond_to?(:to_model) ? object.to_model : object
+    end
+
+    def model_name_from_record_or_class(record_or_class)
+      (record_or_class.is_a?(Class) ? record_or_class : convert_to_model(record_or_class).class).model_name
+    end
+
   end
 end
