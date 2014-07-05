@@ -12,11 +12,11 @@
   - Support all supported version of actionpack/rails
   - Dropped dependency on jquery gem
   - Namespaced all data attributes to avoid conflict.
-  - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js
-  - Replaced default method to PATCH instead of PUT
+  - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js 
   - Added BestInPlaceEditor.defaults
   - Deprecated opts[:sanitize] in favor of option[:raw]
-  
+  - You have to require jquery.purr  before best_in_place.purr 
+  - You have to require jquery-ui.datepicker  before best_in_place.jquery-ui 
 
 - v.2x : glitch in the Matrix
 

@@ -284,29 +284,6 @@ And finally we need a controller:
 
 And this is how it is done!
 
----
-
-##Test Helpers
-Best In Place has also some helpers that may be very useful for integration testing. Since it might very common to test some views using Best In Place, some helpers are provided to ease it.
-
-As of now, a total of four helpers are available. There is one for each of the following BIP types: a plain text input, a textarea, a boolean input and a selector. Its function is to simulate the user's action of filling such fields.
-
-These four helpers are listed below:
-
-* **bip_area(model, attr, new_value)**
-* **bip_text(model, attr, new_value)**
-* **bip_bool(model, attr)**
-* **bip_select(model, attr, name)**
-
-The parameters are defined here (some are method-specific):
-
-* **model**: the model to which this action applies.
-* **attr**: the attribute of the model to which this action applies.
-* **new_value** (only **bip_area** and **bip_text**): the new value with which to fill the BIP field.
-* **name** (only **bip_select**): the name to select from the dropdown selector.
-
----
-
 ##Installation
 
 ###Rails
@@ -371,25 +348,34 @@ If the script is used with the Rails Gem no html tags will be allowed unless the
 
 Fork the project on [github](https://github.com/bernat/best_in_place 'bernat / best_in_place on Github')
 
-    $ git clone <<your fork>
+    $ git clone <your fork>
     $ cd best_in_place
     $ bundle
 
-### Prepare the test app
-
-    $ cd test_app
-    $ bundle
-    $ bundle exec rake db:test:prepare
-    $ cd ..
-
 ### Run the specs
 
-    $ bundle exec rspec spec/
+    $ appraisal rspec
 
-### Bundler / gem troubleshooting
+---
 
-- make sure you've run the bundle command for both the app and test_app!
-- run bundle update <<gem name> (in the right place) for any gems that are causing issues
+##Test Helpers
+Best In Place has also some helpers that may be very useful for integration testing. Since it might very common to test some views using Best In Place, some helpers are provided to ease it.
+
+As of now, a total of four helpers are available. There is one for each of the following BIP types: a plain text input, a textarea, a boolean input and a selector. Its function is to simulate the user's action of filling such fields.
+
+These four helpers are listed below:
+
+* **bip_area(model, attr, new_value)**
+* **bip_text(model, attr, new_value)**
+* **bip_bool(model, attr)**
+* **bip_select(model, attr, name)**
+
+The parameters are defined here (some are method-specific):
+
+* **model**: the model to which this action applies.
+* **attr**: the attribute of the model to which this action applies.
+* **new_value** (only **bip_area** and **bip_text**): the new value with which to fill the BIP field.
+* **name** (only **bip_select**): the name to select from the dropdown selector.
 
 ---
 
