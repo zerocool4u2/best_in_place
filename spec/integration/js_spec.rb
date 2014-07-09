@@ -29,6 +29,16 @@ describe "JS behaviour", :js => true do
 
       within("#last_name") { expect(page).to have_content("Other thing") }
     end
+
+    it 'should be able to use another url' do
+      @user.save!
+      visit admin_user_path(@user)
+
+      within('#name') { expect(page).to have_content("Lucia") }
+      bip_text @user, :name, 'Other thing'
+
+      within('#name') { expect(page).to have_content('Other thing') }
+    end
   end
 
   describe "nil option" do
