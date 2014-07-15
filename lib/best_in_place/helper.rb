@@ -119,7 +119,7 @@ module BestInPlace
     end
 
     def best_in_place_assert_arguments(args)
-      args.assert_valid_keys(:id, :type, :nil, :class, :collection, :data,
+      args.assert_valid_keys(:id, :type, :nil, :classes, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
                              :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
                              :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, :as, :param)
