@@ -51,7 +51,7 @@ module BestInPlace
       options[:data]['bip-ok-button-class'] = opts[:ok_button_class].presence
       options[:data]['bip-cancel-button'] = opts[:cancel_button].presence
       options[:data]['bip-cancel-button-class'] = opts[:cancel_button_class].presence
-      options[:data]['bip-original-content'] = html_escape(value).presence
+      options[:data]['bip-original-content'] = html_escape(opts[:value] || value).presence
 
       options[:data]['bip-url'] = url_for(opts[:url] || object)
 
@@ -121,7 +121,7 @@ module BestInPlace
     def best_in_place_assert_arguments(args)
       args.assert_valid_keys(:id, :type, :nil, :classes, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
-                             :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path,
+                             :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path, :value,
                              :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, :as, :param)
 
       best_in_place_deprecated_options(args)

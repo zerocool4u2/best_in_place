@@ -17,6 +17,7 @@
   - Deprecated opts[:sanitize] in favor of option[:raw]
   - You have to require jquery.purr  before best_in_place.purr 
   - You have to require jquery-ui.datepicker  before best_in_place.jquery-ui 
+  - Added opts[:value] to set custom original-value
 
 - v.2x : glitch in the Matrix
 
