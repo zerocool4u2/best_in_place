@@ -64,6 +64,7 @@ Options:
 - **:as**: Used for overriding the default params key used for the object (the data-object attribute). Useful for e.g. STI scenarios where best_in_place should post to a common controller for different models.
 - **:data**: Hash of custom data attributes to be added to span. Can be used to provide data to the ajax:success callback.
 - **:class**: Additional classes to apply to the best_in_place span.  Accepts either a string or Array of strings
+- **:value**: Customize the starting value of the inline input (defaults to to the field's value)
 
 ###best_in_place_if
 **best_in_place_if condition, object, field, OPTIONS**
