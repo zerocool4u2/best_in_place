@@ -153,7 +153,7 @@ module BestInPlace
 
       if deprecated_option = args.delete(:classes)
         args[:class] = deprecated_option
-        AActiveSupport::Deprecation.warn('[Best_in_place] :classes is deprecated in favor of :class ')
+        ActiveSupport::Deprecation.warn('[Best_in_place] :classes is deprecated in favor of :class ')
       end
 
       if deprecated_option = args.delete(:nil)
