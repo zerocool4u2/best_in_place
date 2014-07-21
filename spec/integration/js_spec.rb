@@ -869,6 +869,23 @@ describe "JS behaviour", :js => true do
 
   end
 
+  describe 'value' do
+    it 'should use custom value in input' do
+      @user.save!
+      visit user_path(@user)
+
+      page.find('#money_value .best_in_place').click
+      expect(page).to have_field('money', with: 'Custom Value')
+    end
+    it 'should not use default value in input with value set' do
+      @user.save!
+      visit user_path(@user)
+
+      page.find('#money_value .best_in_place').click
+      expect(page).not_to have_field('money', with: @user.money)
+    end
+  end
+
   it "should display strings with quotes correctly in fields" do
     @user.last_name = "A last name \"with double quotes\""
     @user.save!
