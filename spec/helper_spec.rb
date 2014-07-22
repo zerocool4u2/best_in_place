@@ -371,6 +371,28 @@ describe BestInPlace::Helper, type: :helper do
         end
       end
     end
+
+    context 'custom container' do
+      before(:each) do
+        @old_container = BestInPlace.container
+        @user.save
+        BestInPlace.container  = :p
+      end
+
+      it 'should override container globally' do
+        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name)
+        expect(nk.css('p')).to_not be_empty
+      end
+
+      it 'should use the container params' do
+        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name, container: :div)
+        expect(nk.css('div')).to_not be_empty
+      end
+
+      after(:each) do
+        BestInPlace.container = @old_container
+      end
+    end
   end
 
   describe "#best_in_place_if" do

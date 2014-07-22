@@ -64,7 +64,8 @@ module BestInPlace
 
       # delete nil keys only
       options[:data].delete_if { |_, v| v.nil? }
-      content_tag(:span, options) do
+      container = opts[:container] || BestInPlace.container
+      content_tag(container, options) do
         opts[:raw].present? ? display_value.to_s.html_safe : display_value
       end
     end
@@ -122,7 +123,8 @@ module BestInPlace
       args.assert_valid_keys(:id, :type, :nil, :classes, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
                              :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path, :value,
-                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, :as, :param)
+                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, 
+                             :as, :param, :container)
 
       best_in_place_deprecated_options(args)
 

@@ -18,7 +18,8 @@
   - You have to require jquery.purr  before best_in_place.purr 
   - You have to require jquery-ui.datepicker  before best_in_place.jquery-ui 
   - Added opts[:value] to set custom original-value
-
+  - You can override the default container
+  
 - v.2x : glitch in the Matrix
 
 - v.1.1.0 Changed $ by jQuery for compatibility (thanks @tschmitz), new
