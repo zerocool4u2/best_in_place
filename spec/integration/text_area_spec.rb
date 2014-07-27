@@ -18,14 +18,14 @@ describe "JS behaviour", :js => true do
     @user.save!
     visit user_path(@user)
     within("#description") do
-      page.should have_content("User description")
+      expect(page).to have_content("User description")
     end
 
     bip_area @user, :description, "A new description"
 
     visit user_path(@user)
     within("#description") do
-      page.should have_content("A new description")
+      expect(page).to have_content("A new description")
     end
   end
 
@@ -34,7 +34,7 @@ describe "JS behaviour", :js => true do
     @user.save!
     visit user_path(@user)
     within("#dw_description") do
-      page.should have_content("I'm so awesome")
+      expect(page).to have_content("I'm so awesome")
     end
   end
 end

@@ -1,7 +1,20 @@
+language: ruby
 rvm:
+  - 1.9.3
   - 2.1.2
+  - rbx-2
 
 env: "RAILS_ENV=test DISPLAY=:99.0"
+gemfile:
+  - gemfiles/rails_3.2.gemfile
+  - gemfiles/rails_4.0.gemfile
+  - gemfiles/rails_4.1.gemfile
+  - gemfiles/rails_edge.gemfile
 
 before_script:
   - "sh -e /etc/init.d/xvfb start"
+
+matrix:
+  allow_failures:
+    - gemfile: gemfiles/rails_edge.gemfile
+    - rvm: rbx-2

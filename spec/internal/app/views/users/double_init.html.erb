@@ -7,13 +7,7 @@
     <tr>
       <td>Name <a id="editme" href="#">(edit me)</a></td>
       <td id="name">
-        <%= best_in_place @user, :name, :type => :input, :activator => "#editme" %>
-      </td>
-    </tr>
-    <tr>
-      <td>Last Name</td>
-      <td id="last_name">
-        <%= best_in_place @user, :last_name, :nil => "Nothing to show", :path => test_respond_with_user_path(@user) %>
+        <%= best_in_place @user, :name, as: :input, :activator => "#editme" %>
       </td>
     </tr>
     <tr>
@@ -37,19 +31,19 @@
     <tr>
       <td>Country</td>
       <td id="country">
-        <%= best_in_place @user, :country, :type => :select, :collection => @countries %>
+        <%= best_in_place @user, :country, as: :select, :collection => @countries %>
       </td>
     </tr>
     <tr>
       <td>Receive newsletter?</td>
       <td id="receive_email">
-        <%= best_in_place @user, :receive_email, :type => :checkbox, :collection => ["No thanks", "Yes of course"] %>
+        <%= best_in_place @user, :receive_email, as: :checkbox, collection: {'false'=>"No thanks", 'true'=>"Yes of course"} %>
       </td>
     </tr>
     <tr>
       <td>User description</td>
       <td id="description">
-        <%= best_in_place @user, :description, :type => :textarea, :sanitize => false %>
+        <%= best_in_place @user, :description, as: :textarea, :raw => true %>
       </td>
     </tr>
     <tr>

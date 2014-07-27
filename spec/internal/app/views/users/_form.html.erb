@@ -37,14 +37,14 @@
   </div>
   <div class="field">
     <%= f.label :country %><br />
-    <%= 
-      f.select :country, COUNTRIES.map {|c|
+    <%= f.select :country, COUNTRIES.map {|c|
         v0 = c[0]
         c[0] = c[1]
         c[1] = v0
         c
       }
     %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

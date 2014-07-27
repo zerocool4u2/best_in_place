@@ -6,13 +6,13 @@
   <table>
     <tr>
       <td id="name">
-        <%= best_in_place [:admin, @user], :name %>
+        <%= best_in_place @user, :name, url: {action: :update} , param: :admin %>
       </td>
     </tr>
     <tr>
       <td>Last Name</td>
       <td id="last_name">
-        <%= best_in_place [:admin, @user], :last_name, :nil => "Nothing to show" %>
+        <%= best_in_place [:admin, @user], :last_name, place_holder: 'Nothing to show' , param: :admin %>
       </td>
     </tr>
   </table>

@@ -6,8 +6,8 @@
 ##Description
 
 **Best in Place** is a jQuery based AJAX Inplace-Editor that takes profit of RESTful server-side controllers to allow users to edit stuff with
-no need of forms. If the server have standard defined REST methods, particularly those to UPDATE your objects (HTTP PUT), then by adding the
-Javascript file to the application it is making all the fields with the proper defined classes to become user in-place editable.
+no need of forms. If the server has standard defined REST methods, particularly those to UPDATE your objects (HTTP PUT), then by adding the
+Javascript file to the application it allows all the fields with the proper defined classes to become user in-place editable.
 
 The editor works by PUTting the updated value to the server and GETting the updated record afterwards to display the updated value.
 
@@ -27,7 +27,7 @@ The editor works by PUTting the updated value to the server and GETting the upda
 - Allows external activator
 - Allows optional, configurable OK and Cancel buttons for inputs and textareas
 - ESC key destroys changes (requires user confirmation)
-- Autogrowing textarea
+- Autogrowing textarea with **jQuery Autosize**
 - Helper for generating the best_in_place field only if a condition is satisfied
 - Provided test helpers to be used in your integration specs
 - Custom display methods using a method from your model or an existing rails
@@ -48,8 +48,8 @@ Options:
 - **:type** It can be only [:input, :textarea, :select, :checkbox, :date (>= 1.0.4)] or if undefined it defaults to :input.
 - **:collection**: In case you are using the :select type then you must specify the collection of values it takes. In case you are
   using the :checkbox type you can specify the two values it can take, or otherwise they will default to Yes and No.
-- **:path**: URL to which the updating action will be sent. If not defined it defaults to the :object path.
-- **:nil**: The nil param defines the content displayed in case no value is defined for that field. It can be something like "click me to edit".
+- **:url**: URL to which the updating action will be sent. If not defined it defaults to the :object path.
+- **:place_holder**: The nil param defines the content displayed in case no value is defined for that field. It can be something like "click me to edit".
   If not defined it will show *"-"*.
 - **:activator**: Is the DOM object that can activate the field. If not defined the user will making editable by clicking on it.
 - **:ok_button**: (Inputs and textareas only) If set to a string, then an OK button will be shown with the string as its label, replacing save on blur.
@@ -61,9 +61,10 @@ Options:
 - **:inner_class**: Class that is set to the rendered input.
 - **:display_as**: A model method which will be called in order to display
   this field.
-- **:object_name**: Used for overriding the default params key used for the object (the data-object attribute). Useful for e.g. STI scenarios where best_in_place should post to a common controller for different models.
+- **:as**: Used for overriding the default params key used for the object (the data-object attribute). Useful for e.g. STI scenarios where best_in_place should post to a common controller for different models.
 - **:data**: Hash of custom data attributes to be added to span. Can be used to provide data to the ajax:success callback.
-- **:classes**: Additional classes to apply to the best_in_place span.  Accepts either a string or Array of strings
+- **:class**: Additional classes to apply to the best_in_place span.  Accepts either a string or Array of strings
+- **:value**: Customize the starting value of the inline input (defaults to to the field's value)
 
 ###best_in_place_if
 **best_in_place_if condition, object, field, OPTIONS**
@@ -232,16 +233,16 @@ In the view, we'd do:
     // @ice_cream is already available
     - flavours = ... // get them somewhere
     - sizes = ... // get them somewhere
-    %table
-      %tr
-        - ([""] + flavours).each do |flavour|
-          %th= flavour
+    table
+      tr
+        - flavours.each do |flavour|
+          th= flavour
       - sizes.each do |size|
-        %tr
+        tr
           %th= size
           - flavours.each do |flavour|
-            - v = @ice_cream.get_stock(:flavour => flavour, :size => size)
-            %td= best_in_place v, :to_i, :type => :input, :path => set_stock_ice_cream_path(:flavour => flavour, :size => size)
+            - v = @ice_cream.get_stock(flavour: flavour, size: size)
+            td= best_in_place v, :to_i, type: :input, url: set_stock_ice_cream_path(flavour: flavour, size: size)
 
 Now we need a route to which send the stock updates:
 
@@ -284,35 +285,12 @@ And finally we need a controller:
 
 And this is how it is done!
 
----
-
-##Test Helpers
-Best In Place has also some helpers that may be very useful for integration testing. Since it might very common to test some views using Best In Place, some helpers are provided to ease it.
-
-As of now, a total of four helpers are available. There is one for each of the following BIP types: a plain text input, a textarea, a boolean input and a selector. Its function is to simulate the user's action of filling such fields.
-
-These four helpers are listed below:
-
-* **bip_area(model, attr, new_value)**
-* **bip_text(model, attr, new_value)**
-* **bip_bool(model, attr)**
-* **bip_select(model, attr, name)**
-
-The parameters are defined here (some are method-specific):
-
-* **model**: the model to which this action applies.
-* **attr**: the attribute of the model to which this action applies.
-* **new_value** (only **bip_area** and **bip_text**): the new value with which to fill the BIP field.
-* **name** (only **bip_select**): the name to select from the dropdown selector.
-
----
-
 ##Installation
 
-###Rails 3.1 and higher
+###Rails
 
-Installing *best_in_place* is very easy and straight-forward, even more
-thanks to Rails 3.1. Just begin including the gem in your Gemfile:
+Installing *best_in_place* is very easy and straight-forward. 
+Just begin including the gem in your Gemfile:
 
     gem "best_in_place"
 
@@ -321,8 +299,10 @@ javascripts in your application.js, and optionally specify jquery-ui if
 you want to use jQuery UI datepickers:
 
     //= require jquery
-    //= require jquery-ui
     //= require best_in_place
+    
+    //= require jquery-ui
+    //= require best_in_place.jquery-ui 
 
 If you want to use jQuery UI datepickers, you should also install and
 load your preferred jquery-ui CSS file and associated assets.
@@ -336,61 +316,18 @@ Then, just add a binding to prepare all best in place fields when the document i
 
 You are done!
 
-###Rails 3.0 and lower
 
-Installing *best_in_place* for Rails 3.0 or below is a little bit
-different, since the master branch is specifically updated for Rails
-3.1. But don't be scared, you'll be fine!
-
-Rails 3.0 support will be held in the 0.2.X versions, but we have planned not to continue developing for this version of Rails. Nevertheless, you can by implementing what you want and sending us a pull request.
-
-First, add the gem's 0.2 version in the Gemfile:
-
-    gem "best_in_place", "~> 0.2.0"
-
-After that, install and load all the javascripts from the folder
-**/public/javascripts** in your layouts. They have to be in the order:
-
-* jquery
-* **best_in_place**
-
-You can automatize this installation by doing
-
-    rails g best_in_place:setup
-
-If you want to use jQuery UI datepickers, you should also install and
-load jquery-ui.js as well as your preferred jquery-ui CSS file and
-associated assets.
-
-Finally, as for Rails 3.1, just add a binding to prepare all best in place fields when the document is ready:
-
-    $(document).ready(function() {
-      /* Activating Best In Place */
-      jQuery(".best_in_place").best_in_place();
-    });
-
----
 
 ## Notification
 
 Sometimes your in-place updates will fail due to validation or for some other reason. In such case, you'll want to notify the user somehow. **Best in Place** supports doing so through the best_in_place:error event, and has built-in support for notification via jquery.purr, right out of the box.
 
-To opt into the jquery.purr error notification, just add best_in_place.purr to your javascripts, as described below. If you'd like to develop your own custom form of error notification, you can use best_in_place.purr as an example to guide you.
-
-###Rails 3.1 and higher
-
-It's as simple as adding:
-
+To opt into the jquery.purr error notification, just add best_in_place.purr to your javascripts, as described below.
+ 
+    //= require jquery.purr
     //= require best_in_place.purr
 
-###Rails 3.0 and lower
-
-You'll have to load the following additional javascripts, in this order, after loading jquery and **best_in_place**:
-
- * jquery.purr
- * **best_in_place.purr**
-
----
+If you'd like to develop your own custom form of error notification, you can use best_in_place.purr as an example to guide you.
 
 ## Security
 
@@ -412,25 +349,34 @@ If the script is used with the Rails Gem no html tags will be allowed unless the
 
 Fork the project on [github](https://github.com/bernat/best_in_place 'bernat / best_in_place on Github')
 
-    $ git clone <<your fork>
+    $ git clone <your fork>
     $ cd best_in_place
     $ bundle
 
-### Prepare the test app
-
-    $ cd test_app
-    $ bundle
-    $ bundle exec rake db:test:prepare
-    $ cd ..
-
 ### Run the specs
 
-    $ bundle exec rspec spec/
+    $ appraisal rspec
 
-### Bundler / gem troubleshooting
+---
 
-- make sure you've run the bundle command for both the app and test_app!
-- run bundle update <<gem name> (in the right place) for any gems that are causing issues
+##Test Helpers
+Best In Place has also some helpers that may be very useful for integration testing. Since it might very common to test some views using Best In Place, some helpers are provided to ease it.
+
+As of now, a total of four helpers are available. There is one for each of the following BIP types: a plain text input, a textarea, a boolean input and a selector. Its function is to simulate the user's action of filling such fields.
+
+These four helpers are listed below:
+
+* **bip_area(model, attr, new_value)**
+* **bip_text(model, attr, new_value)**
+* **bip_bool(model, attr)**
+* **bip_select(model, attr, name)**
+
+The parameters are defined here (some are method-specific):
+
+* **model**: the model to which this action applies.
+* **attr**: the attribute of the model to which this action applies.
+* **new_value** (only **bip_area** and **bip_text**): the new value with which to fill the BIP field.
+* **name** (only **bip_select**): the name to select from the dropdown selector.
 
 ---
 
