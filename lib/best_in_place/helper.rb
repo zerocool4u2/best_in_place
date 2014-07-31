@@ -65,9 +65,7 @@ module BestInPlace
       # delete nil keys only
       options[:data].delete_if { |_, v| v.nil? }
       container = opts[:container] || BestInPlace.container
-      content_tag(container, options) do
-        opts[:raw].present? ? display_value.to_s.html_safe : display_value
-      end
+      content_tag(container, display_value, options, opts[:raw].blank?)
     end
 
     def best_in_place_if(condition, object, field, opts = {})
