@@ -89,7 +89,7 @@ describe BestInPlace::Helper, type: :helper do
       end
 
 
-      it "should have be raw by default" do
+      it "should have be sanitized by default" do
         expect(@span.attribute("data-bip-raw")).to be_nil
       end
 
@@ -197,6 +197,14 @@ describe BestInPlace::Helper, type: :helper do
         nk = Nokogiri::HTML.parse(out)
         span = nk.css("span")
         expect(span.attribute('data-bip-raw').value).to eq('true')
+      end
+
+      it 'should not satinize if raw is true' do
+        @user.description = '<h1>Raw text</h1>'
+        out = helper.best_in_place @user, :description, raw: true
+        nk = Nokogiri::HTML.parse(out)
+        span = nk.css('span')
+        expect(span.css('h1')).to_not be_empty
       end
 
       describe "object_name" do
