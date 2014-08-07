@@ -111,10 +111,10 @@ Examples (code in the views):
 
 ### Select
 
-    <%= best_in_place @user, :country, :type => :select, :collection => [[1, "Spain"], [2, "Italy"], [3, "Germany"], [4, "France"]] %>
+    <%= best_in_place @user, :country, :type => :select, :collection => {{"1", "Spain"}, {"2", "Italy"}, {"3", "Germany"}, {"4", "France"}} %>
 
-Of course it can take an instance or global variable for the collection, just remember the structure `[[key, value], [key, value],...]`.
-The key can be a string or an integer.
+Of course it can take an instance or global variable for the collection, just remember the structure `{{key, value}, {key, value},...}`.
+The key has to be a string. *
 
 ### Checkbox
 
@@ -194,9 +194,9 @@ The 'ajax:success' event is triggered upon success. Use bind:
 
     $('.best_in_place').bind("ajax:success", function () {$(this).closest('tr').effect('highlight'); });
 
-To bind a callback that is specific to a particular field, use the 'classes' option in the helper method and 
-then bind to that class. 
-    
+To bind a callback that is specific to a particular field, use the 'classes' option in the helper method and
+then bind to that class.
+
     <%= best_in_place @user, :name, :classes => 'highlight_on_success' %>
     <%= best_in_place @user, :mail, :classes => 'bounce_on_success' %>
 
@@ -289,7 +289,7 @@ And this is how it is done!
 
 ###Rails
 
-Installing *best_in_place* is very easy and straight-forward. 
+Installing *best_in_place* is very easy and straight-forward.
 Just begin including the gem in your Gemfile:
 
     gem "best_in_place"
@@ -300,9 +300,9 @@ you want to use jQuery UI datepickers:
 
     //= require jquery
     //= require best_in_place
-    
+
     //= require jquery-ui
-    //= require best_in_place.jquery-ui 
+    //= require best_in_place.jquery-ui
 
 If you want to use jQuery UI datepickers, you should also install and
 load your preferred jquery-ui CSS file and associated assets.
@@ -323,7 +323,7 @@ You are done!
 Sometimes your in-place updates will fail due to validation or for some other reason. In such case, you'll want to notify the user somehow. **Best in Place** supports doing so through the best_in_place:error event, and has built-in support for notification via jquery.purr, right out of the box.
 
 To opt into the jquery.purr error notification, just add best_in_place.purr to your javascripts, as described below.
- 
+
     //= require jquery.purr
     //= require best_in_place.purr
 

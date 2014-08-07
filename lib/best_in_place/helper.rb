@@ -29,6 +29,7 @@ module BestInPlace
             display_value = collection[value]
             collection = collection.to_json
           else # :select
+            value = value.to_s
             collection = best_in_place_collection_builder(collection)
             display_value = collection[value]
             collection = collection.to_json
@@ -121,7 +122,7 @@ module BestInPlace
       args.assert_valid_keys(:id, :type, :nil, :classes, :collection, :data,
                              :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
                              :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path, :value,
-                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class, 
+                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class,
                              :as, :param, :container)
 
       best_in_place_deprecated_options(args)
