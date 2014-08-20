@@ -623,9 +623,7 @@ describe "JS behaviour", :js => true do
       bip_text @user, :zip, ""
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :zip
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
       text = page.find("##{id} input").value
       expect(text).to eq("")
