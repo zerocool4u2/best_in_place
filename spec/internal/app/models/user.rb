@@ -24,4 +24,8 @@ class User < ActiveRecord::Base
   def markdown_desc
     RDiscount.new(description).to_html.html_safe
   end
+
+  def zip_format
+    nil
+  end
 end
