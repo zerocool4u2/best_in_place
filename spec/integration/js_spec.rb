@@ -605,6 +605,32 @@ describe "JS behaviour", :js => true do
       end
     end
 
+    it "should show default em-dash when the new result with the custom format is nil after an update" do
+      @user.save
+      visit user_path(@user)
+
+      bip_text @user, :zip, ""
+
+      within("#zip") do
+        expect(page).to have_content("-")
+      end
+    end
+
+    it "should be editable after the new result with the custom format is nil because of an update" do
+      @user.save
+      visit user_path(@user)
+
+      bip_text @user, :zip, ""
+
+      id = BestInPlace::Utils.build_best_in_place_id @user, :zip
+      page.execute_script <<-JS
+        $("##{id}").click();
+      JS
+
+      text = page.find("##{id} input").value
+      expect(text).to eq("")
+    end
+
     it "should display the original content when editing the form" do
       @user.save!
       retry_on_timeout do
