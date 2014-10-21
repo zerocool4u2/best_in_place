@@ -113,8 +113,8 @@ Examples (code in the views):
 
     <%= best_in_place @user, :country, :type => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
 
-Of course it can take an instance or global variable for the collection, just remember the structure `{{key, value}, {key, value},...}`.
-The key has to be a string. *
+Of course it can take an instance or global variable for the collection, just remember the structure is a hash.
+The key will always be converted to a string for display. *
 
 ### Checkbox
 
