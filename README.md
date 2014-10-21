@@ -46,7 +46,7 @@ Params:
 Options:
 
 - **:type** It can be only [:input, :textarea, :select, :checkbox, :date (>= 1.0.4)] or if undefined it defaults to :input.
-- **:collection**: In case you are using the :select type then you must specify the collection of values it takes. In case you are
+- **:collection**: If you are using the :select type then you must specify the collection of values it takes as a hash where keys represent the display text and values are the option's value when selected. If you are
   using the :checkbox type you can specify the two values it can take, or otherwise they will default to Yes and No.
 - **:url**: URL to which the updating action will be sent. If not defined it defaults to the :object path.
 - **:place_holder**: The nil param defines the content displayed in case no value is defined for that field. It can be something like "click me to edit".
@@ -111,7 +111,7 @@ Examples (code in the views):
 
 ### Select
 
-    <%= best_in_place @user, :country, :type => :select, :collection => {{"1", "Spain"}, {"2", "Italy"}, {"3", "Germany"}, {"4", "France"}} %>
+    <%= best_in_place @user, :country, :type => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
 
 Of course it can take an instance or global variable for the collection, just remember the structure `{{key, value}, {key, value},...}`.
 The key has to be a string. *
