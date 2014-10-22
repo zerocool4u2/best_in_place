@@ -15,6 +15,37 @@ The editor works by PUTting the updated value to the server and GETting the upda
 
 ---
 
+##Installation
+
+###Rails
+
+Installing *best_in_place* is very easy and straight-forward.
+Just begin including the gem in your Gemfile:
+
+    gem "best_in_place"
+
+After that, specify the use of the jquery and best in place
+javascripts in your application.js, and optionally specify jquery-ui if
+you want to use jQuery UI datepickers:
+
+    //= require jquery
+    //= require best_in_place
+
+    //= require jquery-ui
+    //= require best_in_place.jquery-ui
+
+If you want to use jQuery UI datepickers, you should also install and
+load your preferred jquery-ui CSS file and associated assets.
+
+Then, just add a binding to prepare all best in place fields when the document is ready:
+
+    $(document).ready(function() {
+      /* Activating Best In Place */
+      jQuery(".best_in_place").best_in_place();
+    });
+
+You are done!
+
 ##Features
 
 - Compatible with text **inputs**
@@ -284,38 +315,6 @@ And finally we need a controller:
     end
 
 And this is how it is done!
-
-##Installation
-
-###Rails
-
-Installing *best_in_place* is very easy and straight-forward.
-Just begin including the gem in your Gemfile:
-
-    gem "best_in_place"
-
-After that, specify the use of the jquery and best in place
-javascripts in your application.js, and optionally specify jquery-ui if
-you want to use jQuery UI datepickers:
-
-    //= require jquery
-    //= require best_in_place
-
-    //= require jquery-ui
-    //= require best_in_place.jquery-ui
-
-If you want to use jQuery UI datepickers, you should also install and
-load your preferred jquery-ui CSS file and associated assets.
-
-Then, just add a binding to prepare all best in place fields when the document is ready:
-
-    $(document).ready(function() {
-      /* Activating Best In Place */
-      jQuery(".best_in_place").best_in_place();
-    });
-
-You are done!
-
 
 
 ## Notification
