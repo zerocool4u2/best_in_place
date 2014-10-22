@@ -326,7 +326,7 @@ describe BestInPlace::Helper, type: :helper do
         expect(@span.text).to eq("No")
       end
 
-      describe "custom collection" do
+      describe "custom hash collection" do
         before do
           @collection = {'false' => 'Nain', 'true' => 'Da'}
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox, collection: @collection)
@@ -339,6 +339,27 @@ describe BestInPlace::Helper, type: :helper do
 
         it "should render the proper data-bip-collection" do
           expect(@span.attribute("data-bip-collection").value).to eq(@collection.to_json)
+        end
+      end
+
+      describe "custom array collection" do
+        before do
+          @good_collection = ['Net', 'Da']
+          @bad_collection = ['Maybe']
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :receive_email, as: :checkbox, collection: @good_collection)
+          @span = nk.css("span")
+        end
+
+        it "should show the message with the custom values" do
+          expect(@span.text).to eq("Net")
+        end
+
+        it "should render the proper data-bip-collection" do
+          expect(@span.attribute("data-bip-collection").value).to eq({'false' => @good_collection[0],'true' => @good_collection[1]}.to_json)
+        end
+
+        it "should raise an argument error on bad collection" do
+          expect { helper.best_in_place @user, :receive_email, as: :checkbox, collection: @bad_collection }.to raise_error(ArgumentError)
         end
       end
 

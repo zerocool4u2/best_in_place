@@ -176,7 +176,11 @@ module BestInPlace
     def best_in_place_collection_builder(collection)
       case collection
         when Array
-          Hash[collection.map { |x| [x.to_s, x.to_s] }]
+          if collection.length == 2
+            {'false' => collection[0], 'true' => collection[1]}
+          else
+            fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
+          end
         else
           collection.stringify_keys
       end
