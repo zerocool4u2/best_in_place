@@ -365,38 +365,97 @@ describe BestInPlace::Helper, type: :helper do
 
     end
 
-    context "with a select attribute" do
+    context 'with a select attribute' do
       before do
-        @countries = COUNTRIES
-        nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @countries)
-        @span = nk.css("span")
+        @countries_hash = COUNTRIES_HASH
+        @countries_hash_string_keys = COUNTRIES_HASH_STRING_KEYS
+        @countries_array = COUNTRIES_ARRAY
+        @apostrophe_countries_hash = COUNTRIES_APOSTROPHE_HASH
+        @apostrophe_countries_array = COUNTRIES_APOSTROPHE_ARRAY
       end
 
-      it 'should have a select data-bip-type' do
-        expect(@span.attribute('data-bip-type').value).to eq('select')
-      end
-
-      it "should have a proper data collection" do
-        expect(@span.attribute('data-bip-collection').value).to eq(@countries.to_json)
-      end
-
-      it "should show the current country" do
-        expect(@span.text).to eq("Italy")
-      end
-
-      it 'should include the proper data-bip-value' do
-        expect(@span.attribute('data-bip-value').value).to eq('2')
-      end
-
-      context "with an apostrophe in it" do
+      describe 'with a hash parameter' do
         before do
-          @apostrophe_countries = {1=> "Joe's Country", 2 => "Bob's Country"}
-          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, :collection => @apostrophe_countries)
-          @span = nk.css("span")
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @countries_hash)
+          @span = nk.css('span')
         end
 
-        it "should have a proper data collection" do
-          expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries.to_json)
+        it 'should have a select data-bip-type' do
+          expect(@span.attribute('data-bip-type').value).to eq('select')
+        end
+
+        it 'should have a proper data collection' do
+          expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash.to_json)
+        end
+
+        it 'should show the current country' do
+          expect(@span.text).to eq('Italy')
+        end
+
+        it 'should include the proper data-bip-value' do
+          expect(@span.attribute('data-bip-value').value).to eq('2')
+        end
+
+        context 'with hash string keys' do
+          before do
+            @user.country = 'it'
+            @user.save
+            nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @countries_hash_string_keys)
+            @span = nk.css('span')
+          end
+
+          it 'should have a proper data collection' do
+            expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash_string_keys.to_json)
+          end
+
+          it 'should show the current country' do
+            expect(@span.text).to eq('Italy')
+          end
+
+          it 'should include the proper data-bip-value' do
+            expect(@span.attribute('data-bip-value').value).to eq('it')
+          end
+        end
+
+        context 'with an apostrophe in it' do
+          before do
+            nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @apostrophe_countries_hash)
+            @span = nk.css('span')
+          end
+
+          it 'should have a proper data collection' do
+            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_hash.to_json)
+          end
+        end
+      end
+
+      describe 'with an array parameter' do
+        before do
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @countries_array)
+          @span = nk.css('span')
+        end
+
+        it 'should have a proper data collection' do
+          expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash.to_json)
+        end
+
+        it 'should show the current country' do
+          expect(@span.text).to eq('Italy')
+        end
+
+        it 'should include the proper data-bip-value' do
+          expect(@span.attribute('data-bip-value').value).to eq('2')
+        end
+
+        context 'with an apostrophe in it' do
+          before do
+            nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @apostrophe_countries_array)
+            @span = nk.css('span')
+          end
+
+          it 'should have a proper data collection' do
+            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_hash.to_json)
+          end
         end
       end
     end
