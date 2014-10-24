@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   # GET /users/1.xml
   def show
     @user = User.find(params[:id])
-    @countries = COUNTRIES
+    @countries = COUNTRIES_HASH
 
     respond_to do |format|
       format.html # show.html.erb
@@ -29,12 +29,12 @@ class UsersController < ApplicationController
 
   def show_ajax
     @user = User.find(params[:id])
-    @countries = COUNTRIES
+    @countries = COUNTRIES_HASH
   end
 
   def double_init
     @user = User.find(params[:id])
-    @countries = COUNTRIES
+    @countries = COUNTRIES_HASH
   end
 
   # GET /users/1/edit

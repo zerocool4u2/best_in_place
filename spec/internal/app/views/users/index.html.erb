@@ -17,7 +17,7 @@
     </td>
     <td><small><a href="#" id="edit_<%= user.id %>">edit</a></small></td>
     <td><%= user.last_name %></td>
-    <td><%= COUNTRIES[user.country.to_i] %></td>
+    <td><%= COUNTRIES_HASH[user.country.to_i] %></td>
   </tr>
 <% end %>
 </table>

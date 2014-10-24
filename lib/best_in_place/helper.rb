@@ -18,19 +18,18 @@ module BestInPlace
 
       if opts[:collection] or type == :checkbox
         collection = opts[:collection]
+        value = value.to_s
         case type
           when :checkbox
-            value = value.to_s
             if collection.blank?
               collection = best_in_place_default_collection
             else
-              collection = best_in_place_collection_builder(collection)
+              collection = best_in_place_collection_builder(type, collection)
             end
             display_value = collection[value]
             collection = collection.to_json
           else # :select
-            value = value.to_s
-            collection = best_in_place_collection_builder(collection)
+            collection = best_in_place_collection_builder(type, collection)
             display_value = collection[value]
             collection = collection.to_json
         end
@@ -173,17 +172,22 @@ module BestInPlace
       end
     end
 
-    def best_in_place_collection_builder(collection)
-      case collection
+    def best_in_place_collection_builder(type, collection)
+      collection = case collection
         when Array
-          if collection.length == 2
-            {'false' => collection[0], 'true' => collection[1]}
-          else
-            fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
+          if type == :checkbox
+            if collection.length == 2
+              {'false' => collection[0], 'true' => collection[1]}
+            else
+              fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
+            end
+          else # :select
+            Hash[(1...collection.size+1).zip collection]
           end
         else
-          collection.stringify_keys
+          collection
       end
+      collection.stringify_keys
     end
 
     def best_in_place_default_collection
