@@ -2,6 +2,15 @@ ENV['RAILS_ENV'] ||= 'test'
 
 require 'combustion'
 require 'capybara/rspec'
+
+require 'capybara/poltergeist'
+require_relative 'support/wait_for_ajax'
+require_relative 'support/screenshot'
+Capybara.register_driver :poltergeist do |app|
+  Capybara::Poltergeist::Driver.new(app, {js_errors: false, inspector: true})
+end
+Capybara.javascript_driver = :poltergeist
+
 require 'best_in_place'
 
 Combustion.initialize! :active_record, :action_controller,

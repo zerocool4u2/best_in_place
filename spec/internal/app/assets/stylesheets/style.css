@@ -47,7 +47,7 @@ textarea {
 }
 .best_in_place:hover, #user_account .do_hover {
   padding-right: 1.5em;
-  background: url(<%= asset_path "red_pen.png" %>) no-repeat right;
+  background: url("/assets/red_pen.png") no-repeat right;
   background-color: #CCC;
 }
 .info_edit {
@@ -81,5 +81,5 @@ textarea {
   width: 25px;
   height: 25px;
   text-indent: -9999px;
-  background: url(<%= image_path("purrClose.png") %>) no-repeat;
+  background: url("assets/purrClose.png") no-repeat;
 }

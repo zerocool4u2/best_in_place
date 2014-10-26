@@ -18,22 +18,16 @@ describe "Monitor new fields", :js => true do
     @user.save!
     visit show_ajax_user_path(@user)
 
-    sleep(1) #give time to the ajax request to work
+    wait_for_ajax
 
-    within("#email") do
-      expect(page).to have_content("lucianapoli@gmail")
-    end
+    expect(find('#email')).to have_content('lucianapoli@gmail')
 
     bip_text @user, :email, "new@email.com"
 
-    within("#email") do
-      expect(page).to have_content("new@email.com")
-    end
+    expect(find('#email')).to have_content('new@email.com')
 
     bip_text @user, :email, "new_two@email.com"
 
-    within("#email") do
-      expect(page).to have_content("new_two@email.com")
-    end
+    expect(find('#email')).to have_content('new_two@email.com')
   end
 end
