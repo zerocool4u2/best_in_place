@@ -61,7 +61,7 @@
     <tr>
       <td>Receive newsletter (image)?</td>
       <td id="receive_email_image">
-        <%= best_in_place @user, :receive_email, as: :checkbox, :collection => {'false' => image_tag('no.png'), 'true' => image_tag('yes.png')} %>
+        <%= best_in_place @user, :receive_email_image, as: :checkbox, :collection => {'false' => image_tag('no.png'), 'true' => image_tag('yes.png')} %>
       </td>
     </tr>
     <tr>
@@ -96,7 +96,7 @@
     <tr>
       <td>Simple-formatted user description</td>
       <td id="dw_description">
-        <%= best_in_place @user, :description, :display_with => :simple_format, as: :textarea %>
+        <%= best_in_place @user, :description_simple, :display_with => :simple_format, as: :textarea %>
       </td>
     </tr>
     <tr>
@@ -120,7 +120,7 @@
     <tr>
       <td>Money with value</td>
       <td id="money_value">
-        <%= best_in_place @user, :money, :display_with => :number_to_currency, value: 'Custom Value' %>
+        <%= best_in_place @user, :money_value, :display_with => :number_to_currency, value: 'Custom Value' %>
       </td>
     </tr>
     <tr>

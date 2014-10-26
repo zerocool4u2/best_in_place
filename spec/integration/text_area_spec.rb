@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'rails_helper'
 
 describe "JS behaviour", :js => true do
   before do
@@ -17,24 +16,20 @@ describe "JS behaviour", :js => true do
   it "should be able to use bip_text to update a text area" do
     @user.save!
     visit user_path(@user)
-    within("#description") do
-      expect(page).to have_content("User description")
-    end
+    expect(find('#description')).to have_content('User description')
 
     bip_area @user, :description, "A new description"
 
     visit user_path(@user)
-    within("#description") do
-      expect(page).to have_content("A new description")
-    end
+
+    expect(find('#description')).to have_content('A new description')
   end
 
   it "should be able to use a bip_text with :display_with option" do
     @user.description = "I'm so awesome"
     @user.save!
     visit user_path(@user)
-    within("#dw_description") do
-      expect(page).to have_content("I'm so awesome")
-    end
+
+    expect(find('#dw_description')).to have_content("I'm so awesome")
   end
 end

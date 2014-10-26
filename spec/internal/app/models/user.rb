@@ -16,6 +16,9 @@ class User < ActiveRecord::Base
   validates_numericality_of :money_proc, :allow_blank => true
 
   alias_attribute :money_custom, :money
+  alias_attribute :money_value, :money
+  alias_attribute :receive_email_image, :receive_email
+  alias_attribute :description_simple, :description
 
   def address_format
     "<b>addr => [#{address}]</b>".html_safe

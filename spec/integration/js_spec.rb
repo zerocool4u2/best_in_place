@@ -24,20 +24,20 @@ describe "JS behaviour", :js => true do
       @user.save!
       visit admin_user_path(@user)
 
-      within("#last_name") { expect(page).to have_content("Napoli") }
+      expect(find('#last_name')).to have_content('Napoli')
       bip_text @user, :last_name, "Other thing"
 
-      within("#last_name") { expect(page).to have_content("Other thing") }
+      expect(find('#last_name')).to have_content('Other thing')
     end
 
     it 'should be able to use another url' do
       @user.save!
       visit admin_user_path(@user)
 
-      within('#name') { expect(page).to have_content("Lucia") }
+      expect(find('#name')).to have_content('Lucia')
       bip_text @user, :name, 'Other thing'
 
-      within('#name') { expect(page).to have_content('Other thing') }
+      expect(find('#name')).to have_content('Other thing')
     end
   end
 
@@ -47,9 +47,7 @@ describe "JS behaviour", :js => true do
       @user.save :validate => false
       visit user_path(@user)
 
-      within("#name") do
-        expect(page).to have_content('-')
-      end
+      expect(find('#name')).to have_content('-')
     end
 
     it "should render the default em-dash string when there is an error and if the intial string is em-dash" do
@@ -59,9 +57,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :money, "abcd"
 
-      within("#money") do
-        expect(page).to have_content('-')
-      end
+      expect(find('#money')).to have_content('-')
     end
 
     it "should render the passed nil value if the field is empty" do
@@ -69,18 +65,15 @@ describe "JS behaviour", :js => true do
       @user.save :validate => false
       visit user_path(@user)
 
-      within("#last_name") do
-        expect(page).to have_content("Nothing to show")
-      end
+      expect(find('#last_name')).to have_content('Nothing to show')
     end
 
     it 'should render html content for placeholder option' do
       @user.favorite_color = ""
       @user.save!
       visit user_path(@user)
-      within("#favorite_color") do
-        expect(page).to have_xpath("//span[@class='placeholder']")
-      end
+
+      expect(find('#favorite_color')).to have_xpath("//span[@class='placeholder']")
     end
 
     it 'should render html content for placeholder option after edit' do
@@ -90,9 +83,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :favorite_color, ""
 
-      within("#favorite_color") do
-        expect(page).to have_xpath("//span[@class='placeholder']")
-      end
+      expect(find('#favorite_color')).to have_css('span.placeholder')
     end
 
     it "should display an empty input field the second time I open it" do
@@ -100,29 +91,22 @@ describe "JS behaviour", :js => true do
       @user.save!
       visit user_path(@user)
 
-      within("#favorite_locale") do
-        expect(page).to have_content("N/A")
-      end
+      expect(find('#favorite_locale')).to have_content('N/A')
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_locale
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      text = page.find("##{id} input").value
+      text = find("##{id} input").value
       expect(text).to eq("")
 
-      page.execute_script <<-JS
-        $("##{id} input[name='favorite_locale']").blur();
-        $("##{id} input[name='favorite_locale']").blur();
+      execute_script <<-JS
+        $("##{id} input[name='favorite_locale']").blur()
       JS
-      sleep 1
+      wait_for_ajax
 
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      text = page.find("##{id} input").value
+      text = find("##{id} input").value
       expect(text).to eq("")
     end
   end
@@ -138,7 +122,6 @@ describe "JS behaviour", :js => true do
       :country => "2",
       :receive_email => false,
       :birth_date => Time.now.utc,
-      :description => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a lectus et lacus ultrices auctor. Morbi aliquet convallis tincidunt. Praesent enim libero, iaculis at commodo nec, fermentum a dolor. Quisque eget eros id felis lacinia faucibus feugiat et ante. Aenean justo nisi, aliquam vel egestas vel, porta in ligula. Etiam molestie, lacus eget tincidunt accumsan, elit justo rhoncus urna, nec pretium neque mi et lorem. Aliquam posuere, dolor quis pulvinar luctus, felis dolor tincidunt leo, eget pretium orci purus ac nibh. Ut enim sem, suscipit ac elementum vitae, sodales vel sem.",
       :money => 100,
       :money_proc => 100,
       :favorite_color => 'Red',
@@ -152,30 +135,22 @@ describe "JS behaviour", :js => true do
     end
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :name
-    page.execute_script <<-JS
-      $("#edit_#{@user.id}").click();
-      $("##{id} input[name='name']").val('Lisa');
-      $("##{id} form").submit();
-    JS
+    find("#edit_#{@user.id}").click
+    find("##{id} input[name='name']").set('Lisa')
+    execute_script("$('##{id} form').submit();")
 
-    within("tr#user_#{@user.id} > .name > span") do
-      expect(page).to have_content('Lisa')
-    end
+    expect(find("tr#user_#{@user.id} > .name > span")).to have_content('Lisa')
   end
 
   it "should be able to use bip_text to update a text field" do
     @user.save!
     visit user_path(@user)
-    within("#email") do
-      expect(page).to have_content("lucianapoli@gmail.com")
-    end
+    expect(find('#email')).to have_content('lucianapoli@gmail.com')
 
     bip_text @user, :email, "new@email.com"
 
     visit user_path(@user)
-    within("#email") do
-      expect(page).to have_content("new@email.com")
-    end
+    expect(find('#email')).to have_content('new@email.com')
   end
 
   it "should be able to update a field two consecutive times" do
@@ -184,20 +159,14 @@ describe "JS behaviour", :js => true do
 
     bip_text @user, :email, "new@email.com"
 
-    within("#email") do
-      expect(page).to have_content("new@email.com")
-    end
+    expect(find('#email')).to have_content('new@email.com')
 
     bip_text @user, :email, "new_two@email.com"
 
-    within("#email") do
-      expect(page).to have_content("new_two@email.com")
-    end
+    expect(find('#email')).to have_content('new_two@email.com')
 
     visit user_path(@user)
-    within("#email") do
-      expect(page).to have_content("new_two@email.com")
-    end
+    expect(find('#email')).to have_content('new_two@email.com')
   end
 
   it "should be able to update a field after an error" do
@@ -208,29 +177,25 @@ describe "JS behaviour", :js => true do
     expect(page).to have_content("Email has wrong email format")
 
     bip_text @user, :email, "another@email.com"
-    within("#email") do
-      expect(page).to have_content("another@email.com")
-    end
+
+    expect(find('#email')).to have_content('another@email.com')
 
     visit user_path(@user)
-    within("#email") do
-      expect(page).to have_content("another@email.com")
-    end
+
+    expect(find('#email')).to have_content('another@email.com')
   end
 
   it "should be able to use bip_select to change a select field" do
     @user.save!
     visit user_path(@user)
-    within("#country") do
-      expect(page).to have_content("Italy")
-    end
+
+    expect(find('#country')).to have_content('Italy')
 
     bip_select @user, :country, "France"
 
     visit user_path(@user)
-    within("#country") do
-      expect(page).to have_content("France")
-    end
+
+    expect(find('#country')).to have_content('France')
   end
 
   it "should apply the inner_class option to a select field" do
@@ -245,141 +210,120 @@ describe "JS behaviour", :js => true do
     @user.save!
     today = Time.now.utc.to_date
     visit user_path(@user)
-    within("#birth_date") do
-      expect(page).to have_content(today)
-    end
+
+    expect(find('#birth_date')).to have_content(today)
 
     bip_text @user, :birth_date, (today - 1.days)
 
     visit user_path(@user)
-    within("#birth_date") do
-      expect(page).to have_content(today - 1.days)
-    end
+
+    expect(find('#birth_date')).to have_content(today - 1.days)
   end
 
   it "should be able to use datepicker to change a date field" do
     @user.save!
     today = Time.now.utc.to_date
     visit user_path(@user)
-    within("#birth_date") do
-      expect(page).to have_content(today)
-    end
+
+    expect(find('#birth_date')).to have_content(today)
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :birth_date
-    page.execute_script <<-JS
-      $("##{id}").click()
+    find("##{id}").click
+    execute_script <<-JS
       $(".ui-datepicker-calendar tbody td").not(".ui-datepicker-other-month").first().click()
     JS
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#birth_date") do
-      expect(page).to have_content(today.beginning_of_month)
-    end
+
+    expect(find('#birth_date')).to have_content(today.beginning_of_month)
   end
 
   it "should be able to modify the datepicker options, displaying the date with another format" do
     @user.save!
     today = Time.now.utc.to_date
     visit user_path(@user)
-    within("#birth_date") do
-      expect(page).to have_content(today)
-    end
+
+    expect(find('#birth_date')).to have_content(today)
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :birth_date
-    page.execute_script <<-JS
-      $("##{id}").click()
+    find("##{id}").click
+    execute_script <<-JS
       $(".ui-datepicker-calendar tbody td").not(".ui-datepicker-other-month").first().click()
     JS
 
-    within("#birth_date") do
-      expect(page).to have_content(today.beginning_of_month.strftime("%d-%m-%Y"))
-    end
+
+    expect(find('#birth_date')).to have_content(today.beginning_of_month.strftime('%d-%m-%Y'))
   end
 
   it "should be able to use bip_bool to change a boolean value" do
     @user.save!
     visit user_path(@user)
 
-    within("#receive_email") do
-      expect(page).to have_content("No thanks")
-    end
+
+    expect(find('#receive_email')).to have_content('No thanks')
 
     bip_bool @user, :receive_email
 
     visit user_path(@user)
-    within("#receive_email") do
-      expect(page).to have_content("Yes of course")
-    end
+
+    expect(find('#receive_email')).to have_content('Yes of course')
   end
 
   it "should be able to use bip_bool to change a boolean value using an image" do
     @user.save!
     visit user_path(@user)
 
-    within("#receive_email_image") do
-      expect(page).to have_xpath("//img[contains(@src,'no.png')]")
-    end
 
-    bip_bool @user, :receive_email
+    expect(find('#receive_email_image')).to have_xpath("//img[contains(@src,'no.png')]")
+
+    bip_bool @user, :receive_email_image
 
     visit user_path(@user)
-    within("#receive_email_image") do
-      expect(page).to have_xpath("//img[contains(@src,'yes.png')]")
-    end
+
+    expect(find('#receive_email_image')).to have_xpath("//img[contains(@src,'yes.png')]")
   end
 
   it "should correctly use an OK submit button when so configured for an input" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+
+    expect(find('#favorite_color')).to have_content('Red')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_color
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} input[name='favorite_color']").val('Blue');
-    JS
+    find("##{id}").click
+    find("##{id} input[name='favorite_color']").set('Blue')
 
-    expect(page.find("##{id} input[type='submit']").value).to eq('Do it!')
+    expect(find("##{id} input[type='submit']").value).to eq('Do it!')
     expect(page).to have_css("##{id} input[type='submit'].custom-submit.other-custom-submit")
-
-    page.execute_script <<-JS
-      $("##{id} input[type='submit']").click();
-    JS
+    find("##{id} input[type='submit']").click
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_color") do
-      expect(page).to have_content('Blue')
-    end
+
+    expect(find('#favorite_color')).to have_content('Blue')
   end
 
   it "should correctly use a Cancel button when so configured for an input" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+
+    expect(find('#favorite_color')).to have_content('Red')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_color
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} input[name='favorite_color']").val('Blue');
-    JS
+    find("##{id}").click
+    find("##{id} input[name='favorite_color']").set('Blue')
 
-    expect(page.find("##{id} input[type='button']").value).to eq('Nope')
+    expect(find("##{id} input[type='button']").value).to eq('Nope')
     expect(page).to have_css("##{id} input[type='button'].custom-cancel.other-custom-cancel")
 
-    page.execute_script <<-JS
-      $("##{id} input[type='button']").click();
-    JS
+    find("##{id} input[type='button']").click
 
     visit user_path(@user)
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+
+    expect(find('#favorite_color')).to have_content('Red')
   end
 
   it "should not ask for confirmation on cancel if it is switched off" do
@@ -387,151 +331,118 @@ describe "JS behaviour", :js => true do
     visit user_path(@user)
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_movie
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} input[name='favorite_movie']").val('No good movie');
-      $("##{id} input[type='button']").click();
-    JS
+    find("##{id}").click
+    find("##{id} input[name='favorite_movie']").set('No good movie')
+    find("##{id} input[type='button']").click
 
-    expect { page.driver.browser.switch_to.alert }.to raise_exception(Selenium::WebDriver::Error::NoAlertPresentError)
-    within("#favorite_movie") do
-      expect(page).to have_content("The Hitchhiker's Guide to the Galaxy")
-    end
+    expect(find('#favorite_movie')).to have_content("The Hitchhiker's Guide to the Galaxy")
   end
 
   it "should not submit input on blur if there's an OK button present" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+    expect(find('#favorite_color')).to have_content('Red')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_color
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} input[name='favorite_color']").val('Blue');
+    find("##{id}").click
+    find("##{id} input[name='favorite_color']").set('Blue')
+    execute_script <<-JS
       $("##{id} input[name='favorite_color']").blur();
     JS
-    sleep 1 # Increase if browser is slow
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+
+    expect(find('#favorite_color')).to have_content('Red')
   end
 
   it "should still submit input on blur if there's only a Cancel button present" do
     @user.save!
-    visit user_path(@user, :suppress_ok_button => 1)
+    visit user_path(@user, suppress_ok_button: 1)
 
-    within("#favorite_color") do
-      expect(page).to have_content('Red')
-    end
+    expect(find('#favorite_color')).to have_content('Red')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_color
-    page.execute_script %{$("##{id}").click();}
+    find(("##{id}")).trigger('click')
     expect(page).to have_no_css("##{id} input[type='submit']")
-    page.execute_script <<-JS
-      $("##{id} input[name='favorite_color']").val('Blue');
-      $("##{id} input[name='favorite_color']").blur();
-      $("##{id} input[name='favorite_color']").blur();
-    JS
-    sleep 1 # Increase if browser is slow
+    find("##{id} input[name='favorite_color']").set 'Blue'
+    sleep 1
+    execute_script("$('##{id} input[name=\"favorite_color\"]').blur()")
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_color") do
-      expect(page).to have_content('Blue')
-    end
+
+    expect(find('#favorite_color')).to have_content('Blue')
   end
 
   it "should correctly use an OK submit button when so configured for a text area" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_books
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} textarea").val('1Q84');
-      $("##{id} input[type='submit']").click();
-    JS
+    find("##{id}").trigger('click')
+    find("##{id} textarea").set('1Q84')
+    find("##{id} input[type='submit']").click
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_books") do
-      expect(page).to have_content('1Q84')
-    end
+
+    expect(find('#favorite_books')).to have_content('1Q84')
   end
 
   it "should correctly use a Cancel button when so configured for a text area" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_books
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} textarea").val('1Q84');
-      $("##{id} input[type='button']").click();
-    JS
+    find("##{id}").click
+    find("##{id} textarea").set('1Q84')
+    find("##{id} input[type='button']").click
 
     visit user_path(@user)
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
   end
 
   it "should not submit text area on blur if there's an OK button present" do
     @user.save!
     visit user_path(@user)
 
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_books
-    page.execute_script <<-JS
-      $("##{id}").click();
-      $("##{id} textarea").val('1Q84');
-      $("##{id} textarea").blur();
-      $("##{id} textarea").blur();
-    JS
-    sleep 1 # Increase if browser is slow
+    find("##{id}").click
+    find("##{id} textarea").set('1Q84')
+    execute_script("$('##{id} textarea').blur()")
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
   end
 
   it "should still submit text area on blur if there's only a Cancel button present" do
     @user.save!
-    visit user_path(@user, :suppress_ok_button => 1)
+    visit user_path(@user, suppress_ok_button: 1)
 
-    within("#favorite_books") do
-      expect(page).to have_content('The City of Gold and Lead')
-    end
+    expect(find('#favorite_books')).to have_content('The City of Gold and Lead')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :favorite_books
-    page.execute_script %{$("##{id}").click();}
+    find("##{id}").trigger 'click'
     expect(page).to have_no_css("##{id} input[type='submit']")
-    page.execute_script <<-JS
-      $("##{id} textarea").val('1Q84');
-      $("##{id} textarea").blur();
-      $("##{id} textarea").blur();
-    JS
-    sleep 1 # Increase if browser is slow
+    find("##{id} textarea").set '1Q84'
+    sleep 1
+    execute_script("$('##{id} textarea').blur()")
+    wait_for_ajax
 
     visit user_path(@user)
-    within("#favorite_books") do
-      expect(page).to have_content('1Q84')
-    end
+
+    expect(find('#favorite_books')).to have_content('1Q84')
   end
 
   it "should show validation errors" do
@@ -540,9 +451,7 @@ describe "JS behaviour", :js => true do
 
     bip_text @user, :address, ""
     expect(page).to have_content("Address can't be blank")
-    within("#address") do
-      expect(page).to have_content("Via Roma 99")
-    end
+    expect(find('#address')).to have_content('Via Roma 99')
   end
 
   it "should fire off a callback when updating a field" do
@@ -550,7 +459,7 @@ describe "JS behaviour", :js => true do
     visit user_path(@user)
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :last_name
-    page.execute_script <<-JS
+    execute_script <<-JS
       $("##{id}").bind('best_in_place:update', function() { $('body').append('Last name was updated!') });
     JS
 
@@ -564,7 +473,7 @@ describe "JS behaviour", :js => true do
     visit user_path(@user)
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :last_name
-    page.execute_script <<-JS
+    execute_script <<-JS
       $("##{id}").bind('best_in_place:success', function() { $('body').append('Updated successfully!') });
     JS
 
@@ -578,9 +487,7 @@ describe "JS behaviour", :js => true do
       @user.save!
       visit user_path(@user)
 
-      within("#address") do
-        expect(page).to have_content("addr => [Via Roma 99]")
-      end
+      expect(find('#address')).to have_content('addr => [Via Roma 99]')
     end
 
     it "should still show the custom format after an error" do
@@ -589,9 +496,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :address, "inva"
 
-      within("#address") do
-        expect(page).to have_content("addr => [Via Roma 99]")
-      end
+      expect(find('#address')).to have_content('addr => [Via Roma 99]')
     end
 
     it "should show the new result with the custom format after an update" do
@@ -600,9 +505,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :address, "New address"
 
-      within("#address") do
-        expect(page).to have_content("addr => [New address]")
-      end
+      expect(find('#address')).to have_content('addr => [New address]')
     end
 
     it "should show default em-dash when the new result with the custom format is nil after an update" do
@@ -611,9 +514,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :zip, ""
 
-      within("#zip") do
-        expect(page).to have_content("-")
-      end
+      expect(find('#zip')).to have_content('-')
     end
 
     it "should be editable after the new result with the custom format is nil because of an update" do
@@ -625,22 +526,20 @@ describe "JS behaviour", :js => true do
       id = BestInPlace::Utils.build_best_in_place_id @user, :zip
       find("##{id}").click
 
-      text = page.find("##{id} input").value
+      text = find("##{id} input").value
       expect(text).to eq("")
     end
 
-    it "should display the original content when editing the form" do
+    it 'should display the original content when editing the form' do
       @user.save!
       retry_on_timeout do
         visit user_path(@user)
 
         id = BestInPlace::Utils.build_best_in_place_id @user, :address
-        page.execute_script <<-JS
-          $("##{id}").click();
-        JS
+        find("##{id}").click
 
-        text = page.find("##{id} input").value
-        expect(text).to eq("Via Roma 99")
+        text = find("##{id} input").value
+        expect(text).to eq('Via Roma 99')
       end
     end
 
@@ -651,17 +550,11 @@ describe "JS behaviour", :js => true do
 
         bip_text @user, :address, "New address"
 
-        sleep 1
-
         id = BestInPlace::Utils.build_best_in_place_id @user, :address
-        page.execute_script <<-JS
-          $("##{id}").click();
-        JS
+        find("##{id}").click
+        wait_for_ajax
 
-        sleep 1
-
-        text = page.find("##{id} input").value
-        expect(text).to eq("New address")
+        expect(find("##{id} input").value).to eq('New address')
       end
     end
 
@@ -673,7 +566,7 @@ describe "JS behaviour", :js => true do
         visit user_path(@user)
         id = BestInPlace::Utils.build_best_in_place_id @user, :address
 
-        text = page.find("##{id}")['data-bip-original-content']
+        text = find("##{id}")['data-bip-original-content']
         expect(text).to eq("A's & B's")
       end
     end
@@ -686,16 +579,14 @@ describe "JS behaviour", :js => true do
 
       visit user_path(@user)
 
-      within("#dw_description") { expect(page).to have_content('-') }
+      expect(find('#dw_description')).to have_content('-')
     end
 
     it "should render the money using number_to_currency" do
       @user.save!
       visit user_path(@user)
 
-      within("#money") do
-        expect(page).to have_content("$100.00")
-      end
+      expect(find('#money')).to have_content('$100.00')
     end
 
     it "should let me use custom helpers with a lambda" do
@@ -705,9 +596,7 @@ describe "JS behaviour", :js => true do
       expect(page).to have_content("100.0 €")
       bip_text @user, :money_custom, "250"
 
-      within("#money_custom") do
-        expect(page).to have_content("250.0 €")
-      end
+      expect(find('#money_custom')).to have_content('250.0 €')
     end
 
     it "should still show the custom format after an error" do
@@ -718,9 +607,7 @@ describe "JS behaviour", :js => true do
 
       expect(page).to have_content("Money is not a number")
 
-      within("#money") do
-        expect(page).to have_content("$100.00")
-      end
+      expect(find('#money')).to have_content('$100.00')
     end
 
     it "should show the new value using the helper after a successful update" do
@@ -729,9 +616,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :money, "240"
 
-      within("#money") do
-        expect(page).to have_content("$240.00")
-      end
+      expect(find('#money')).to have_content('$240.00')
     end
 
     it "should show the new value using the helper after a successful update if original value is nil" do
@@ -741,9 +626,7 @@ describe "JS behaviour", :js => true do
 
       bip_text @user, :money, "240"
 
-      within("#money") do
-        expect(page).to have_content("$240.00")
-      end
+      expect(find('#money')).to have_content('$240.00')
     end
 
     it "should display the original content when editing the form" do
@@ -752,11 +635,9 @@ describe "JS behaviour", :js => true do
         visit user_path(@user)
 
         id = BestInPlace::Utils.build_best_in_place_id @user, :money
-        page.execute_script <<-JS
-          $("##{id}").click();
-        JS
+        find("##{id}").click
 
-        text = page.find("##{id} input").value
+        text = find("##{id} input").value
         expect(text).to eq("100.0")
       end
     end
@@ -769,16 +650,11 @@ describe "JS behaviour", :js => true do
 
         bip_text @user, :money, "40"
 
-        sleep 1
-
         id = BestInPlace::Utils.build_best_in_place_id @user, :money
-        page.execute_script <<-JS
-          $("##{id}").click();
-        JS
+        find("##{id}").click
+        wait_for_ajax
 
-        sleep 1
-
-        text = page.find("##{id} input").value
+        text = find("##{id} input").value
         expect(text).to eq("40")
       end
     end
@@ -787,11 +663,11 @@ describe "JS behaviour", :js => true do
       @user.save!
       visit double_init_user_path(@user)
 
-      within("#alt_money") { expect(page).to have_content("€100.00") }
+      expect(find('#alt_money')).to have_content('€100.00')
 
       bip_text @user, :money, 58
 
-      within("#alt_money") { expect(page).to have_content("€58.00") }
+      expect(find('#alt_money')).to have_content('€58.00')
     end
 
     it "should keep link after edit with display_with :link_to" do
@@ -802,13 +678,10 @@ describe "JS behaviour", :js => true do
         expect(page).to have_xpath("//a[contains(@href,'#{user_path(@user)}')]")
       end
       id = BestInPlace::Utils.build_best_in_place_id @user, :name
-      page.execute_script <<-JS
-        jQuery("#edit_#{@user.id}").click();
-        jQuery("##{id} input[name='name']").val('Maria Lucia');
-        jQuery("##{id} form").submit();
-      JS
+      find("#edit_#{@user.id}").click
+      find("##{id} input[name='name']").set('Maria Lucia')
       within("tr#user_#{@user.id} > .name > span") do
-        expect(page).to have_content("Maria Lucia")
+        expect(page).to have_content('Maria Lucia')
         expect(page).to have_xpath("//a[contains(@href,'#{user_path(@user)}')]")
       end
     end
@@ -821,11 +694,8 @@ describe "JS behaviour", :js => true do
         expect(page).to have_xpath("//a[contains(@href,'#{user_path(@user)}')]")
       end
       id = BestInPlace::Utils.build_best_in_place_id @user, :name
-      page.execute_script <<-JS
-        jQuery("#edit_#{@user.id}").click();
-        jQuery("##{id} input[name='name']").blur();
-        jQuery("##{id} input[name='name']").blur();
-      JS
+      find("#edit_#{@user.id}").click
+      execute_script("$('##{id} input[name=\"name\"]').blur();")
       within("tr#user_#{@user.id} > .name > span") do
         expect(page).to have_content("Lucia")
         expect(page).to have_xpath("//a[contains(@href,'#{user_path(@user)}')]")
@@ -837,9 +707,7 @@ describe "JS behaviour", :js => true do
         @user.save!
         visit user_path(@user)
 
-        within("#money_proc") do
-          expect(page).to have_content("$100.00")
-        end
+        expect(find('#money_proc')).to have_content('$100.00')
       end
 
       it "should show the new value using the helper after a successful update" do
@@ -848,9 +716,7 @@ describe "JS behaviour", :js => true do
 
         bip_text @user, :money_proc, "240"
 
-        within("#money_proc") do
-          expect(page).to have_content("$240.00")
-        end
+        expect(find('#money_proc')).to have_content('$240.00')
       end
 
       it "should display the original content when editing the form" do
@@ -859,11 +725,9 @@ describe "JS behaviour", :js => true do
           visit user_path(@user)
 
           id = BestInPlace::Utils.build_best_in_place_id @user, :money_proc
-          page.execute_script <<-JS
-            $("##{id}").click();
-          JS
+          find("##{id}").click
 
-          text = page.find("##{id} input").value
+          text = find("##{id} input").value
           expect(text).to eq("100.0")
         end
       end
@@ -873,19 +737,13 @@ describe "JS behaviour", :js => true do
 
         retry_on_timeout do
           visit user_path(@user)
-
           bip_text @user, :money_proc, "40"
 
-          sleep 1
-
           id = BestInPlace::Utils.build_best_in_place_id @user, :money_proc
-          page.execute_script <<-JS
-            $("##{id}").click();
-          JS
+          find("##{id}").click
+          wait_for_ajax
 
-          sleep 1
-          text = page.find("##{id} input").value
-          expect(text).to eq("40")
+          expect(find("##{id} input").value).to eq('40')
         end
       end
 
@@ -898,14 +756,14 @@ describe "JS behaviour", :js => true do
       @user.save!
       visit user_path(@user)
 
-      page.find('#money_value .best_in_place').click
-      expect(page).to have_field('money', with: 'Custom Value')
+      find('#money_value .best_in_place').click
+      expect(page).to have_field('money_value', with: 'Custom Value')
     end
     it 'should not use default value in input with value set' do
       @user.save!
       visit user_path(@user)
 
-      page.find('#money_value .best_in_place').click
+      find('#money_value .best_in_place').click
       expect(page).not_to have_field('money', with: @user.money)
     end
   end
@@ -918,12 +776,9 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :last_name
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      text = page.find("##{id} input").value
-      expect(text).to eq("A last name \"with double quotes\"")
+      expect(find("##{id} input").value).to eq("A last name \"with double quotes\"")
     end
   end
 
@@ -948,11 +803,9 @@ describe "JS behaviour", :js => true do
       visit double_init_user_path(@user)
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :description
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      text = page.find("##{id} textarea").value
+      text = find("##{id} textarea").value
       expect(text).to eq("A text with an & and a <b>Raw html</b>")
     end
   end
@@ -969,11 +822,9 @@ describe "JS behaviour", :js => true do
       expect(page).to have_link("link in this text", :href => "http://google.es")
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :description
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      expect(page.find("##{id} textarea").value).to eq("A <a href=\"http://google.es\">link in this text</a> not sanitized.")
+      expect(find("##{id} textarea").value).to eq("A <a href=\"http://google.es\">link in this text</a> not sanitized.")
     end
   end
 
@@ -985,11 +836,9 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :height
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      expect(page.find("##{id} select").value).to eq(%{5' 6"})
+      expect(find("##{id} select").value).to eq(%{5' 6"})
     end
   end
 
@@ -1001,14 +850,12 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :height
-      page.execute_script <<-JS
-        $("##{id}").click();
+      find("##{id}").click
+      execute_script <<-JS
         $("##{id} select").val("5' 7\\\"");
         $("##{id} select").blur();
-        $("##{id} select").blur();
       JS
-
-      sleep 1
+      wait_for_ajax
 
       @user.reload
       expect(@user.height).to eq(%{5' 7"})
@@ -1022,7 +869,6 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       bip_text @user, :last_name, "Other '); alert('hi');"
-      sleep 1
 
       @user.reload
       expect(@user.last_name).to eq("Other '); alert('hi');")
@@ -1036,7 +882,6 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       bip_text @user, :last_name, "Other \"thing\""
-      sleep 1
 
       @user.reload
       expect(@user.last_name).to eq("Other \"thing\"")
@@ -1050,30 +895,25 @@ describe "JS behaviour", :js => true do
       visit user_path(@user)
 
       bip_text @user, :last_name, "<script>alert('hi');</script>"
-      within("#last_name") { expect(page).to have_content("<script>alert('hi');</script>") }
+      expect(find('#last_name')).to have_content("<script>alert('hi');</script>")
 
       visit user_path(@user)
 
       id = BestInPlace::Utils.build_best_in_place_id @user, :last_name
-      page.execute_script <<-JS
-        $("##{id}").click();
-      JS
+      find("##{id}").click
 
-      expect(page.find("##{id} input").value).to eq("<script>alert('hi');</script>")
+      expect(find("##{id} input").value).to eq("<script>alert('hi');</script>")
     end
   end
 
   it "should generate the select html with the proper current option selected" do
     @user.save!
     visit user_path(@user)
-    within("#country") do
-      expect(page).to have_content("Italy")
-    end
+    expect(find('#country')).to have_content('Italy')
 
     id = BestInPlace::Utils.build_best_in_place_id @user, :country
-    page.execute_script <<-JS
-      $("##{id}").click();
-    JS
+    find("##{id}").click
+    wait_for_ajax
 
     expect(page).to have_css("##{id} select option[value='2'][selected='selected']")
   end
@@ -1081,17 +921,12 @@ describe "JS behaviour", :js => true do
   it "should generate the select with the proper current option without reloading the page" do
     @user.save!
     visit user_path(@user)
-    within("#country") do
-      expect(page).to have_content("Italy")
-    end
+    expect(find('#country')).to have_content('Italy')
 
     bip_select @user, :country, "France"
 
-    sleep 1 # Increase if browser is slow
     id = BestInPlace::Utils.build_best_in_place_id @user, :country
-    page.execute_script <<-JS
-      $("##{id}").click();
-    JS
+    find("##{id}").click
 
     expect(page).to have_css("##{id} select option[value='4'][selected='selected']")
   end
