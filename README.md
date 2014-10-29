@@ -123,8 +123,7 @@ It is a very useful feature to use with, for example, [Ryan Bates](https://githu
 
 ---
 
-##TestApp and examples
-A [test_app](https://github.com/bernat/best_in_place/tree/master/test_app) was created, and can be seen in action in a [running demo on heroku](http://bipapp.heroku.com).
+##Examples
 
 Examples (code in the views):
 
