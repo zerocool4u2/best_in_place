@@ -11,3 +11,4 @@ spec/internal/tmp/**/*
 
 .rvmrc
 coverage
+tmp

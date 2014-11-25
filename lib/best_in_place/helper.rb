@@ -1,6 +1,7 @@
 module BestInPlace
   module Helper
     def best_in_place(object, field, opts = {})
+      
       best_in_place_assert_arguments(opts)
       type = opts[:as] || :input
       field = field.to_s
@@ -38,6 +39,8 @@ module BestInPlace
 
       options[:class] = ['best_in_place'] + Array(opts[:class] || opts[:classes])
       options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
+
+      pass_through_html_options(opts, options)
 
       options[:data]['bip-activator'] = opts[:activator].presence
 
@@ -82,6 +85,16 @@ module BestInPlace
 
     private
 
+    def pass_through_html_options(opts, options)
+      known_keys = [:id, :type, :nil, :classes, :collection, :data,
+                    :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
+                    :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path, :value,
+                    :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class,
+                    :as, :param, :container]
+      uknown_keys = opts.keys - known_keys
+      uknown_keys.each { |key| options[key] = opts[key] }
+    end
+
     def best_in_place_build_value_for(object, field, opts)
       klass = object.class
       if opts[:display_as]
@@ -102,8 +115,6 @@ module BestInPlace
           if field_value.blank?
             ''
           else
-
-
             BestInPlace::ViewHelpers.send(opts[:display_with], field_value)
           end
         end
@@ -118,12 +129,6 @@ module BestInPlace
     end
 
     def best_in_place_assert_arguments(args)
-      args.assert_valid_keys(:id, :type, :nil, :classes, :collection, :data,
-                             :activator, :cancel_button, :cancel_button_class, :html_attrs, :inner_class, :nil,
-                             :object_name, :ok_button, :ok_button_class, :display_as, :display_with, :path, :value,
-                             :use_confirm, :confirm, :sanitize, :raw, :helper_options, :url, :place_holder, :class,
-                             :as, :param, :container)
-
       best_in_place_deprecated_options(args)
 
       if args[:display_as] && args[:display_with]
