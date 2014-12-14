@@ -77,8 +77,7 @@ Params:
 Options:
 
 - **:type** It can be only [:input, :textarea, :select, :checkbox, :date (>= 1.0.4)] or if undefined it defaults to :input.
-- **:collection**: If you are using the :select type then you must specify the collection of values it takes as a hash where keys represent the display text and values are the option's value when selected. If you are
-  using the :checkbox type you can specify the two values it can take, or otherwise they will default to Yes and No.
+- **:collection**: If you are using the :select type then you must specify the collection of values it takes as a hash where values represent the display text and keys are the option's value when selected. If you are using the :checkbox type you can specify the two values it can take, or otherwise they will default to Yes and No.
 - **:url**: URL to which the updating action will be sent. If not defined it defaults to the :object path.
 - **:place_holder**: The nil param defines the content displayed in case no value is defined for that field. It can be something like "click me to edit".
   If not defined it will show *"-"*.
@@ -88,18 +87,30 @@ Options:
 - **:cancel_button**: (Inputs and textareas only) If set to a string, then a Cancel button will be shown with the string as its label.
 - **:cancel_button_class**: (Inputs and textareas only) Specifies any extra classes to set on the Cancel button.
 - **:sanitize**: True by default. If set to false the input/textarea will accept html tags.
-- **:html_attrs**: Hash of html arguments, such as maxlength, default-value etc.
+- **:html_attrs**: Hash of html arguments such as maxlength, default-value, etc. that will be set on the rendered input **not** the best_in_place span.  
 - **:inner_class**: Class that is set to the rendered input.
-- **:display_as**: A model method which will be called in order to display
-  this field.
+- **:display_as**: A **model** method which will be called in order to display this field. Cannot be used when using `display_with`.
+- **:display_with**: A **helper** method or proc will be called in order to display this field. Cannot be used with `display_as`.
+- **:helper_options**: A hash of parameters to be sent to the helper method specified by `display_with`.
 - **:as**: Used for overriding the default params key used for the object (the data-object attribute). Useful for e.g. STI scenarios where best_in_place should post to a common controller for different models.
 - **:data**: Hash of custom data attributes to be added to span. Can be used to provide data to the ajax:success callback.
 - **:class**: Additional classes to apply to the best_in_place span.  Accepts either a string or Array of strings
 - **:value**: Customize the starting value of the inline input (defaults to to the field's value)
+- **:id**: The HTML id of the best_in_place span. If not specified one is automatically generated.
+- **:param**: If you wish to specific the object explicitly use this option.
+- **:confirm**: If set to true displays a confirmation message when abandoning changes (pressing the escape key);
+
+HTML Options:  
+
+If you provide an option that is not explicitly a best_in_place option it will be passed through when creating the best_in_place span.
+
+So, for instance, if you want to add an HTML tab index to the best_in_place span just add it to your method call:
+
+    <%= best_in_place @user, :name, tabindex: "1" %>
 
 ###best_in_place_if
 **best_in_place_if condition, object, field, OPTIONS**
-see also **best_in_place_unless
+see also **best_in_place_unless**
 
 It allows us to use best_in_place only if the first new parameter, a
 condition, is satisfied. Specifically:
@@ -123,7 +134,7 @@ It is a very useful feature to use with, for example, [Ryan Bates](https://githu
 
 ---
 
-##Examples
+## Examples
 
 Examples (code in the views):
 
@@ -144,7 +155,7 @@ Examples (code in the views):
     <%= best_in_place @user, :country, :type => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
 
 Of course it can take an instance or global variable for the collection, just remember the structure is a hash.
-The key will always be converted to a string for display. *
+The value will always be converted to a string for display.
 
 ### Checkbox
 
@@ -269,7 +280,7 @@ In the view, we'd do:
           th= flavour
       - sizes.each do |size|
         tr
-          %th= size
+          th= size
           - flavours.each do |flavour|
             - v = @ice_cream.get_stock(flavour: flavour, size: size)
             td= best_in_place v, :to_i, type: :input, url: set_stock_ice_cream_path(flavour: flavour, size: size)
@@ -353,7 +364,10 @@ Fork the project on [github](https://github.com/bernat/best_in_place 'bernat / b
 
 ### Run the specs
 
+    $ appraisal
     $ appraisal rspec
+
+You many need to install appraisal: `gem install appraisal`
 
 ---
 

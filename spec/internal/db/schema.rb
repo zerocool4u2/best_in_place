@@ -22,5 +22,6 @@ ActiveRecord::Schema.define do
     t.string   "height"
     t.string   "favorite_movie"
     t.string   "favorite_locale"
+    t.integer  "zero_field"
   end
 end

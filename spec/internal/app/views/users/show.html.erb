@@ -102,7 +102,7 @@
     <tr>
       <td>Money</td>
       <td id="money">
-        <%= best_in_place @user, :money, :display_with => :number_to_currency %>
+        <%= best_in_place @user, :money, :display_with => :number_to_currency%>
       </td>
     </tr>
     <tr>
@@ -131,6 +131,13 @@
         <%= best_in_place @user, :favorite_movie, opts %>
       </td>
     </tr>
+    <tr>
+      <td>Zero Field</td>
+      <td id="zero_field">
+        <%= best_in_place @user, :zero_field, place_holder: 0 %>
+      </td>
+    </tr>
+    
   </table>
   <br/>
   <hr/>
