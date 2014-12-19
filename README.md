@@ -153,6 +153,9 @@ Examples (code in the views):
 ### Select
 
     <%= best_in_place @user, :country, :type => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
+    <%= best_in_place @user, :country, :type => :select, :collection => { es: 'Spain', it: 'Italy', de: 'Germany', fr: 'France' } %>
+    <%= best_in_place @user, :country, :type => :select, :collection => %w(Spain Italy Germany France) %>
+    <%= best_in_place @user, :country, :type => :select, :collection => [[1, 'Spain'], [3, 'Germany'], [2, 'Italy'], [4, 'France']] %>
 
 Of course it can take an instance or global variable for the collection, just remember the structure is a hash.
 The value will always be converted to a string for display.

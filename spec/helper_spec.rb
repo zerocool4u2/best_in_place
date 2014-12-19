@@ -339,7 +339,7 @@ describe BestInPlace::Helper, type: :helper do
         end
 
         it "should render the proper data-bip-collection" do
-          expect(@span.attribute("data-bip-collection").value).to eq(@collection.to_json)
+          expect(@span.attribute("data-bip-collection").value).to eq(@collection.to_a.to_json)
         end
       end
 
@@ -371,6 +371,7 @@ describe BestInPlace::Helper, type: :helper do
         @countries_hash = COUNTRIES_HASH
         @countries_hash_string_keys = COUNTRIES_HASH_STRING_KEYS
         @countries_array = COUNTRIES_ARRAY
+        @countries_array_of_arrays = COUNTRIES_ARRAY_OF_ARRAYS
         @apostrophe_countries_hash = COUNTRIES_APOSTROPHE_HASH
         @apostrophe_countries_array = COUNTRIES_APOSTROPHE_ARRAY
       end
@@ -386,7 +387,7 @@ describe BestInPlace::Helper, type: :helper do
         end
 
         it 'should have a proper data collection' do
-          expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash.to_json)
+          expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash.to_a.to_json)
         end
 
         it 'should show the current country' do
@@ -406,7 +407,7 @@ describe BestInPlace::Helper, type: :helper do
           end
 
           it 'should have a proper data collection' do
-            expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash_string_keys.to_json)
+            expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash_string_keys.to_a.to_json)
           end
 
           it 'should show the current country' do
@@ -425,7 +426,7 @@ describe BestInPlace::Helper, type: :helper do
           end
 
           it 'should have a proper data collection' do
-            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_hash.to_json)
+            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_hash.to_a.to_json)
           end
         end
       end
@@ -437,7 +438,7 @@ describe BestInPlace::Helper, type: :helper do
         end
 
         it 'should have a proper data collection' do
-          expect(@span.attribute('data-bip-collection').value).to eq(@countries_hash.to_json)
+          expect(@span.attribute('data-bip-collection').value).to eq(@countries_array.each_with_index.map{|a,i| [i+1,a]}.to_json)
         end
 
         it 'should show the current country' do
@@ -455,9 +456,29 @@ describe BestInPlace::Helper, type: :helper do
           end
 
           it 'should have a proper data collection' do
-            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_hash.to_json)
+            expect(@span.attribute('data-bip-collection').value).to eq(@apostrophe_countries_array.each_with_index.map{|a,i| [i+1,a]}.to_json)
           end
         end
+      end
+
+      describe 'with an array parameter' do
+        before do
+          nk = Nokogiri::HTML.parse(helper.best_in_place @user, :country, as: :select, collection: @countries_array_of_arrays)
+          @span = nk.css('span')
+        end
+
+        it 'should have a proper data collection' do
+          expect(@span.attribute('data-bip-collection').value).to eq(@countries_array_of_arrays.to_json)
+        end
+
+        it 'should show the current country' do
+          expect(@span.text).to eq('Italy')
+        end
+
+        it 'should include the proper data-bip-value' do
+          expect(@span.attribute('data-bip-value').value).to eq('2')
+        end
+
       end
       
       describe "with html parameters" do

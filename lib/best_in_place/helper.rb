@@ -20,20 +20,13 @@ module BestInPlace
       if opts[:collection] or type == :checkbox
         collection = opts[:collection]
         value = value.to_s
-        case type
-          when :checkbox
-            if collection.blank?
-              collection = best_in_place_default_collection
-            else
-              collection = best_in_place_collection_builder(type, collection)
-            end
-            display_value = collection[value]
-            collection = collection.to_json
-          else # :select
-            collection = best_in_place_collection_builder(type, collection)
-            display_value = collection[value]
-            collection = collection.to_json
+        collection = if collection.blank?
+          best_in_place_default_collection
+        else
+          best_in_place_collection_builder(type, collection)
         end
+        display_value = collection.flat_map{|a| a[0].to_s == value ? a[1] : nil }.compact[0]
+        collection = collection.to_json
         options[:data]['bip-collection'] = html_escape(collection)
       end
 
@@ -182,17 +175,26 @@ module BestInPlace
         when Array
           if type == :checkbox
             if collection.length == 2
-              {'false' => collection[0], 'true' => collection[1]}
+              {'false' => collection[0], 'true' => collection[1]}.stringify_keys
             else
               fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
             end
           else # :select
-            Hash[(1...collection.size+1).zip collection]
+            case collection[0]
+              when Array
+                collection
+              else
+                if collection[0].length == 2
+                  collection.to_a
+                else
+                  collection.each_with_index.map{|a,i| [i+1,a]}
+                end
+            end
           end
         else
-          collection
+          collection.to_a
       end
-      collection.stringify_keys
+      collection
     end
 
     def best_in_place_default_collection
