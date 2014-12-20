@@ -50,7 +50,7 @@ module BestInPlace
           if yield
             return true
           else
-            sleep(0.1)
+            sleep(0.2)
             next
           end
         end
