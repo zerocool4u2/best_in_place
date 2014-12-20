@@ -350,7 +350,8 @@ describe "JS behaviour", :js => true do
     execute_script <<-JS
       $("##{id} input[name='favorite_color']").blur();
     JS
-    wait_for_ajax
+    sleep 0.5
+    expect(page).to have_css("##{id} input[type='submit']")
 
     visit user_path(@user)
 
