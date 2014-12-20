@@ -16,7 +16,7 @@ gem "poltergeist"
 gem "sqlite3"
 gem "appraisal"
 gem "launchy"
-gem "rails", "3.2.19"
+gem "rails", :github => "rails/rails", :branch => "3-2-stable"
 gem "strong_parameters"
 
 platforms :mri_21 do

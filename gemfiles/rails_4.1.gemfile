@@ -16,7 +16,7 @@ gem "poltergeist"
 gem "sqlite3"
 gem "appraisal"
 gem "launchy"
-gem "rails", "~> 4.1.0"
+gem "rails", :github => "rails/rails", :branch => "4-1-stable"
 
 platforms :mri_21 do
   gem "byebug"
