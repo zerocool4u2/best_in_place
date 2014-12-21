@@ -149,6 +149,8 @@ describe "JS behaviour", :js => true do
 
     bip_text @user, :email, "new@email.com"
 
+    expect(find('#email')).to have_content('new@email.com')
+
     visit user_path(@user)
     expect(find('#email')).to have_content('new@email.com')
   end
@@ -193,6 +195,8 @@ describe "JS behaviour", :js => true do
 
     bip_select @user, :country, "France"
 
+    expect(find('#country')).to have_content('France')
+
     visit user_path(@user)
 
     expect(find('#country')).to have_content('France')
@@ -215,6 +219,8 @@ describe "JS behaviour", :js => true do
 
     bip_text @user, :birth_date, (today - 1.days)
 
+    expect(find('#birth_date')).to have_content(today - 1.days)
+
     visit user_path(@user)
 
     expect(find('#birth_date')).to have_content(today - 1.days)
@@ -233,6 +239,8 @@ describe "JS behaviour", :js => true do
       $(".ui-datepicker-calendar tbody td").not(".ui-datepicker-other-month").first().click()
     JS
     wait_for_ajax
+
+    expect(find('#birth_date')).to have_content(today.beginning_of_month.strftime('%d-%m-%Y'))
 
     visit user_path(@user)
 
@@ -265,6 +273,8 @@ describe "JS behaviour", :js => true do
 
     bip_bool @user, :receive_email
 
+    expect(find('#receive_email')).to have_content('Yes of course')
+
     visit user_path(@user)
 
     expect(find('#receive_email')).to have_content('Yes of course')
@@ -278,6 +288,8 @@ describe "JS behaviour", :js => true do
     expect(find('#receive_email_image')).to have_xpath("//img[contains(@src,'no.png')]")
 
     bip_bool @user, :receive_email_image
+
+    expect(find('#receive_email_image')).to have_xpath("//img[contains(@src,'yes.png')]")
 
     visit user_path(@user)
 
@@ -299,6 +311,8 @@ describe "JS behaviour", :js => true do
     expect(page).to have_css("##{id} input[type='submit'].custom-submit.other-custom-submit")
     find("##{id} input[type='submit']").click
     wait_for_ajax
+
+    expect(find('#favorite_color')).to have_content('Blue')
 
     visit user_path(@user)
 
@@ -371,6 +385,8 @@ describe "JS behaviour", :js => true do
     sleep 1
     execute_script("$('##{id} input[name=\"favorite_color\"]').blur()")
     wait_for_ajax
+
+    expect(find('#favorite_color')).to have_content('Blue')
 
     visit user_path(@user)
 
@@ -790,6 +806,9 @@ describe "JS behaviour", :js => true do
       visit double_init_user_path(@user)
 
       bip_area @user, :description, "A <a href=\"http://google.es\">link in this text</a> not sanitized."
+
+      expect(page).to have_link("link in this text", :href => "http://google.es")
+
       visit double_init_user_path(@user)
 
       expect(page).to have_link("link in this text", :href => "http://google.es")
