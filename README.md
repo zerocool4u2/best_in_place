@@ -76,7 +76,7 @@ Params:
 
 Options:
 
-- **:type** It can be only [:input, :textarea, :select, :checkbox, :date (>= 1.0.4)] or if undefined it defaults to :input.
+- **:as** It can be only [:input, :textarea, :select, :checkbox, :date] or if undefined it defaults to :input.
 - **:collection**: If you are using the :select type then you must specify the collection of values it takes as a hash where values represent the display text and keys are the option's value when selected. If you are using the :checkbox type you can specify the two values it can take, or otherwise they will default to Yes and No.
 - **:url**: URL to which the updating action will be sent. If not defined it defaults to the :object path.
 - **:place_holder**: The nil param defines the content displayed in case no value is defined for that field. It can be something like "click me to edit".
@@ -92,7 +92,6 @@ Options:
 - **:display_as**: A **model** method which will be called in order to display this field. Cannot be used when using `display_with`.
 - **:display_with**: A **helper** method or proc will be called in order to display this field. Cannot be used with `display_as`.
 - **:helper_options**: A hash of parameters to be sent to the helper method specified by `display_with`.
-- **:as**: Used for overriding the default params key used for the object (the data-object attribute). Useful for e.g. STI scenarios where best_in_place should post to a common controller for different models.
 - **:data**: Hash of custom data attributes to be added to span. Can be used to provide data to the ajax:success callback.
 - **:class**: Additional classes to apply to the best_in_place span.  Accepts either a string or Array of strings
 - **:value**: Customize the starting value of the inline input (defaults to to the field's value)
@@ -120,11 +119,11 @@ condition, is satisfied. Specifically:
 
 Say we have something like
 
-    <%= best_in_place_if condition, @user, :name, :type => :input %>
+    <%= best_in_place_if condition, @user, :name, :as => :input %>
 
 In case *condition* is satisfied, the outcome will be just the same as:
 
-    <%= best_in_place @user, :name, :type => :input %>
+    <%= best_in_place @user, :name, :as => :input %>
 
 Otherwise, we will have the same outcome as:
 
@@ -140,36 +139,36 @@ Examples (code in the views):
 
 ### Input
 
-    <%= best_in_place @user, :name, :type => :input %>
+    <%= best_in_place @user, :name, :as => :input %>
 
-    <%= best_in_place @user, :name, :type => :input, :nil => "Click me to add content!" %>
+    <%= best_in_place @user, :name, :as => :input, :nil => "Click me to add content!" %>
 
 ### Textarea
 
-    <%= best_in_place @user, :description, :type => :textarea %>
+    <%= best_in_place @user, :description, :as => :textarea %>
 
-    <%= best_in_place @user, :favorite_books, :type => :textarea, :ok_button => 'Save', :cancel_button => 'Cancel' %>
+    <%= best_in_place @user, :favorite_books, :as => :textarea, :ok_button => 'Save', :cancel_button => 'Cancel' %>
 
 ### Select
 
-    <%= best_in_place @user, :country, :type => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
-    <%= best_in_place @user, :country, :type => :select, :collection => { es: 'Spain', it: 'Italy', de: 'Germany', fr: 'France' } %>
-    <%= best_in_place @user, :country, :type => :select, :collection => %w(Spain Italy Germany France) %>
-    <%= best_in_place @user, :country, :type => :select, :collection => [[1, 'Spain'], [3, 'Germany'], [2, 'Italy'], [4, 'France']] %>
+    <%= best_in_place @user, :country, :as => :select, :collection => {"1" => "Spain", "2" => "Italy", "3" => "Germany", "4" => "France"} %>
+    <%= best_in_place @user, :country, :as => :select, :collection => { es: 'Spain', it: 'Italy', de: 'Germany', fr: 'France' } %>
+    <%= best_in_place @user, :country, :as => :select, :collection => %w(Spain Italy Germany France) %>
+    <%= best_in_place @user, :country, :as => :select, :collection => [[1, 'Spain'], [3, 'Germany'], [2, 'Italy'], [4, 'France']] %>
 
 Of course it can take an instance or global variable for the collection, just remember the structure is a hash.
 The value will always be converted to a string for display.
 
 ### Checkbox
 
-    <%= best_in_place @user, :receive_emails, :type => :checkbox, :collection => ["No, thanks", "Yes, of course!"] %>
+    <%= best_in_place @user, :receive_emails, :as => :checkbox, :collection => ["No, thanks", "Yes, of course!"] %>
 
 The first value is always the negative boolean value and the second the positive. Structure: `["false value", "true value"]`.
 If not defined, it will default to *Yes* and *No* options.
 
 ### Date
 
-    <%= best_in_place @user, :birth_date, :type => :date %>
+    <%= best_in_place @user, :birth_date, :as => :date %>
 
 With the :date type the input field will be initialized as a datepicker input.
 In order to provide custom options to the datepicker initialization you must
@@ -206,7 +205,7 @@ the :json format. This is a simple example showing an update action using it:
 As of best in place 1.0.3 you can use custom methods in your model in order to
 decide how a certain field has to be displayed. You can write something like:
 
-    = best_in_place @user, :description, :type => :textarea, :display_as => :mk_description
+    = best_in_place @user, :description, :as => :textarea, :display_as => :mk_description
 
 Then instead of using `@user.description` to show the actual value, best in
 place will call `@user.mk_description`. This can be used for any kind of
@@ -286,7 +285,7 @@ In the view, we'd do:
           th= size
           - flavours.each do |flavour|
             - v = @ice_cream.get_stock(flavour: flavour, size: size)
-            td= best_in_place v, :to_i, type: :input, url: set_stock_ice_cream_path(flavour: flavour, size: size)
+            td= best_in_place v, :to_i, as: :input, url: set_stock_ice_cream_path(flavour: flavour, size: size)
 
 Now we need a route to which send the stock updates:
 
