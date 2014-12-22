@@ -1,10 +1,12 @@
 appraise "rails-3.2" do
   gem 'rails', github: "rails/rails", branch: '3-2-stable'
   gem 'strong_parameters'
+  gem 'test-unit'
 end
 
 appraise "rails-4.0" do
   gem "rails", github: "rails/rails", branch: '4-0-stable'
+  gem 'test-unit'
 end
 
 appraise "rails-4.1" do
