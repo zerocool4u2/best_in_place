@@ -1,5 +1,8 @@
 #Changelog
 
+- v.3.0.3 :
+  - Pass all callback arguments on $.ajax
+
 - v.3.0.0 :
   - Expect syntax for spec
   - Deprecated option[:path] in favor of option[:url]
