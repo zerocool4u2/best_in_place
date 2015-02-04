@@ -87,7 +87,7 @@ Options:
 - **:cancel_button**: (Inputs and textareas only) If set to a string, then a Cancel button will be shown with the string as its label.
 - **:cancel_button_class**: (Inputs and textareas only) Specifies any extra classes to set on the Cancel button.
 - **:sanitize**: True by default. If set to false the input/textarea will accept html tags.
-- **:html_attrs**: Hash of html arguments such as maxlength, default-value, etc. that will be set on the rendered input **not** the best_in_place span.  
+- **:html_attrs**: Hash of html arguments such as maxlength, default-value, etc. that will be set on the rendered input **not** the best_in_place span.
 - **:inner_class**: Class that is set to the rendered input.
 - **:display_as**: A **model** method which will be called in order to display this field. Cannot be used when using `display_with`.
 - **:display_with**: A **helper** method or proc will be called in order to display this field. Cannot be used with `display_as`.
@@ -99,7 +99,7 @@ Options:
 - **:param**: If you wish to specific the object explicitly use this option.
 - **:confirm**: If set to true displays a confirmation message when abandoning changes (pressing the escape key);
 
-HTML Options:  
+HTML Options:
 
 If you provide an option that is not explicitly a best_in_place option it will be passed through when creating the best_in_place span.
 
@@ -243,8 +243,8 @@ then bind to that class.
     <%= best_in_place @user, :name, :classes => 'highlight_on_success' %>
     <%= best_in_place @user, :mail, :classes => 'bounce_on_success' %>
 
-    $('.highlight_on_success').bind("ajax:success", function(){$(this).closest('tr').effect('highlight'));});
-    $('.bounce_on_success').bind("ajax:success", function(){$(this).closest('tr').effect('bounce'));});
+    $('.highlight_on_success').bind("ajax:success", function(){$(this).closest('tr').effect('highlight');});
+    $('.bounce_on_success').bind("ajax:success", function(){$(this).closest('tr').effect('bounce');});
 
 ### Providing data to the callback
 
