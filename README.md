@@ -97,7 +97,8 @@ Options:
 - **:value**: Customize the starting value of the inline input (defaults to to the field's value)
 - **:id**: The HTML id of the best_in_place span. If not specified one is automatically generated.
 - **:param**: If you wish to specific the object explicitly use this option.
-- **:confirm**: If set to true displays a confirmation message when abandoning changes (pressing the escape key);
+- **:confirm**: If set to true displays a confirmation message when abandoning changes (pressing the escape key).
+- **:skip_blur**: If set to true, blurring the input will not cause changes to be abandoned in textareas.
 
 HTML Options:
 
