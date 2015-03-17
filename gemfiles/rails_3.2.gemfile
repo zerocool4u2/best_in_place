@@ -18,6 +18,7 @@ gem "appraisal"
 gem "launchy"
 gem "rails", :github => "rails/rails", :branch => "3-2-stable"
 gem "strong_parameters"
+gem "test-unit"
 
 platforms :mri_21 do
   gem "byebug"
