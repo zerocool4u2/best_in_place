@@ -193,7 +193,7 @@ describe "JS behaviour", :js => true do
 
     expect(find('#country')).to have_content('Italy')
 
-    bip_select @user, :country, "France"
+    bip_select @user, :country, 'France'
 
     expect(find('#country')).to have_content('France')
 
