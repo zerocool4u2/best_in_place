@@ -1,7 +1,7 @@
 module BestInPlace
   module Helper
     def best_in_place(object, field, opts = {})
-      
+
       best_in_place_assert_arguments(opts)
       type = opts[:as] || :input
       field = field.to_s
@@ -48,6 +48,8 @@ module BestInPlace
       options[:data]['bip-cancel-button'] = opts[:cancel_button].presence
       options[:data]['bip-cancel-button-class'] = opts[:cancel_button_class].presence
       options[:data]['bip-original-content'] = html_escape(opts[:value] || value).presence
+
+      options[:data]['bip-skip-blur'] = opts[:skip_blur].presence
 
       options[:data]['bip-url'] = url_for(opts[:url] || object)
 

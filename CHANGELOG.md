@@ -1,4 +1,6 @@
 #Changelog
+- unreleased
+  - add option[:skip_blur] to play nice with wysiwhtml5
 
 - v.3.0.3 :
   - Pass all callback arguments on $.ajax
@@ -15,14 +17,14 @@
   - Support all supported version of actionpack/rails
   - Dropped dependency on jquery gem
   - Namespaced all data attributes to avoid conflict.
-  - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js 
+  - Jquery-ui datepicker was extracted to best_in_place.jquery-ui.js
   - Added BestInPlaceEditor.defaults
   - Deprecated opts[:sanitize] in favor of option[:raw]
-  - You have to require jquery.purr  before best_in_place.purr 
-  - You have to require jquery-ui.datepicker  before best_in_place.jquery-ui 
+  - You have to require jquery.purr  before best_in_place.purr
+  - You have to require jquery-ui.datepicker  before best_in_place.jquery-ui
   - Added opts[:value] to set custom original-value
   - You can override the default container
-  
+
 - v.2x : glitch in the Matrix
 
 - v.1.1.0 Changed $ by jQuery for compatibility (thanks @tschmitz), new
