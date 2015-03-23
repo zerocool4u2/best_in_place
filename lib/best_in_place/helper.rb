@@ -177,7 +177,7 @@ module BestInPlace
         when Array
           if type == :checkbox
             if collection.length == 2
-              {'false' => collection[0], 'true' => collection[1]}.stringify_keys
+              [['false', collection[0]], ['true', collection[1]]]
             else
               fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
             end

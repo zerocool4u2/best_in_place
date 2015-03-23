@@ -355,8 +355,8 @@ describe BestInPlace::Helper, type: :helper do
           expect(@span.text).to eq("Net")
         end
 
-        it "should render the proper data-bip-collection" do
-          expect(@span.attribute("data-bip-collection").value).to eq({false: @good_collection[0], true: @good_collection[1]}.to_json)
+        it 'should render the proper data-bip-collection' do
+          expect(@span.attribute('data-bip-collection').value).to eq([['false', @good_collection[0]], ['true', @good_collection[1]]].to_json)
         end
 
         it "should raise an argument error on bad collection" do
