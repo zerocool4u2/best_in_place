@@ -111,6 +111,17 @@ describe "JS behaviour", :js => true do
     end
   end
 
+  it 'should update the DOM when a field value changes' do
+    @user.save!
+    visit user_path(@user)
+
+    expect(find('#receive_email')).to have_content('No thanks')
+
+    bip_bool @user, :receive_email
+
+    expect(page).to have_selector('#receive_email span[data-bip-value=true]')
+  end
+
   it "should be able to update last but one item in list" do
     @user.save!
     @user2 = User.create :name => "Test",
