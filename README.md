@@ -334,6 +334,15 @@ And finally we need a controller:
 
 And this is how it is done!
 
+## Configuration
+
+You can configure some global options for best_in_place. Currently these options are available:
+
+    BestInPlace.configure do |config|
+      config.container = :div
+      config.skip_blur = true
+    end
+    
 
 ## Notification
 

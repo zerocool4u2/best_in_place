@@ -521,6 +521,25 @@ describe BestInPlace::Helper, type: :helper do
         BestInPlace.container = @old_container
       end
     end
+
+    context '.configure' do
+      describe 'skip_blur' do
+        before(:each) do
+          @old_skip_blur = BestInPlace.skip_blur
+          @user.save
+          BestInPlace.skip_blur  = true
+        end
+
+        after(:each) do
+          BestInPlace.skip_blur = @old_skip_blur
+        end
+
+        it 'should override blur globally' do
+          nk = Nokogiri::HTML.parse(helper.best_in_place(@user, :name))
+          expect(nk.css("span").attribute("data-bip-skip-blur").value).to eq("true")
+        end
+      end
+    end
   end
 
   describe "#best_in_place_if" do

@@ -49,7 +49,7 @@ module BestInPlace
       options[:data]['bip-cancel-button-class'] = opts[:cancel_button_class].presence
       options[:data]['bip-original-content'] = html_escape(opts[:value] || value).presence
 
-      options[:data]['bip-skip-blur'] = opts[:skip_blur].presence
+      options[:data]['bip-skip-blur'] = opts[:skip_blur].presence || BestInPlace.skip_blur
 
       options[:data]['bip-url'] = url_for(opts[:url] || object)
 
