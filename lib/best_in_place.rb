@@ -14,10 +14,11 @@ module BestInPlace
   end
 
   class Configuration
-    attr_accessor :container
+    attr_accessor :container, :skip_blur
 
     def initialize
       @container = :span
+      @skip_blur = false
     end
   end
 
