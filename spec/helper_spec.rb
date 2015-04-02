@@ -538,6 +538,11 @@ describe BestInPlace::Helper, type: :helper do
           nk = Nokogiri::HTML.parse(helper.best_in_place(@user, :name))
           expect(nk.css("span").attribute("data-bip-skip-blur").value).to eq("true")
         end
+
+        it 'should use helper params' do
+          nk = Nokogiri::HTML.parse(helper.best_in_place(@user, :name, skip_blur: false))
+          expect(nk.css("span").attribute("data-bip-skip-blur")).to be_nil
+        end
       end
     end
   end
