@@ -53,6 +53,12 @@
       </td>
     </tr>
     <tr>
+      <td>Receive newsletter? (default display)</td>
+      <td id="receive_email_default">
+        <%= best_in_place @user, :receive_email_default, as: :checkbox %>
+      </td>
+    </tr>
+    <tr>
       <td>Receive newsletter?</td>
       <td id="receive_email">
         <%= best_in_place @user, :receive_email, as: :checkbox, collection: ['No thanks', 'Yes of course'] %>
@@ -137,7 +143,7 @@
         <%= best_in_place @user, :zero_field, place_holder: 0 %>
       </td>
     </tr>
-    
+
   </table>
   <br/>
   <hr/>

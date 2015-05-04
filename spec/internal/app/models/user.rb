@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
 
   alias_attribute :money_custom, :money
   alias_attribute :money_value, :money
+  alias_attribute :receive_email_default, :receive_email
   alias_attribute :receive_email_image, :receive_email
   alias_attribute :description_simple, :description
 

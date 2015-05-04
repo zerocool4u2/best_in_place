@@ -275,6 +275,22 @@ describe "JS behaviour", :js => true do
     expect(find('#birth_date')).to have_content(today.beginning_of_month.strftime('%d-%m-%Y'))
   end
 
+  it "should be able to use bip_bool to change the default boolean values" do
+    @user.save!
+    visit user_path(@user)
+
+
+    expect(find('#receive_email_default')).to have_content('No')
+
+    bip_bool @user, :receive_email_default
+
+    expect(find('#receive_email_default')).to have_content('Yes')
+
+    visit user_path(@user)
+
+    expect(find('#receive_email_default')).to have_content('Yes')
+  end
+
   it "should be able to use bip_bool to change a boolean value" do
     @user.save!
     visit user_path(@user)
