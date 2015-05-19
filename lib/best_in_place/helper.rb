@@ -20,11 +20,8 @@ module BestInPlace
       if opts[:collection] or type == :checkbox
         collection = opts[:collection]
         value = value.to_s
-        collection = if collection.blank?
-          best_in_place_default_collection
-        else
-          best_in_place_collection_builder(type, collection)
-        end
+        collection = best_in_place_default_collection if collection.blank?
+        collection = best_in_place_collection_builder(type, collection)
         display_value = collection.flat_map{|a| a[0].to_s == value ? a[1] : nil }.compact[0]
         collection = collection.to_json
         options[:data]['bip-collection'] = html_escape(collection)

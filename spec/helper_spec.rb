@@ -141,7 +141,7 @@ describe BestInPlace::Helper, type: :helper do
           span = nk.css("span")
           expect(span.text).to eq("")
         end
-        
+
       end
 
       it "should have the given inner_class" do
@@ -320,7 +320,7 @@ describe BestInPlace::Helper, type: :helper do
       end
 
       it "should have the default data-bip-collection" do
-        expect(@span.attribute("data-bip-collection").value).to eq("{\"true\":\"Yes\",\"false\":\"No\"}")
+        expect(@span.attribute("data-bip-collection").value).to eq("[[\"true\",\"Yes\"],[\"false\",\"No\"]]")
       end
 
       it "should render the current option as No" do
@@ -480,24 +480,24 @@ describe BestInPlace::Helper, type: :helper do
         end
 
       end
-      
+
       describe "with html parameters" do
         before do
           @attrs = {tabindex: 1, width: "300px", height: "24px"}
           nk = Nokogiri::HTML.parse(helper.best_in_place @user, :name, @attrs)
           @span = nk.css("span")
         end
-        
+
         it 'should pass through html attributes to the best_in_place span' do
           expect(@attrs.select {|key, value| @span.attribute(key.to_s) }).to eq(@attrs)
         end
-        
+
         it 'should have the proper values set' do
           expect(@attrs.map {|key, value| @span.attribute(key.to_s).value }).to eq(@attrs.map {|key, value| value.to_s })
         end
-        
+
       end
-      
+
     end
 
     context 'custom container' do
