@@ -11,8 +11,6 @@ Javascript file to the application it allows all the fields with the proper defi
 
 The editor works by PUTting the updated value to the server and GETting the updated record afterwards to display the updated value.
 
-[**SEE DEMO**](http://bipapp.heroku.com/)
-
 ---
 
 ##Installation
