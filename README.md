@@ -140,7 +140,7 @@ Examples (code in the views):
 
     <%= best_in_place @user, :name, :as => :input %>
 
-    <%= best_in_place @user, :name, :as => :input, :nil => "Click me to add content!" %>
+    <%= best_in_place @user, :name, :as => :input, :place_holder => "Click me to add content!" %>
 
 ### Textarea
 
