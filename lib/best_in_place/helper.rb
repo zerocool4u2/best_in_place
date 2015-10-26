@@ -152,30 +152,27 @@ module BestInPlace
     end
 
     def best_in_place_collection_builder(type, collection)
-      collection = case collection
-        when Array
-          if type == :checkbox
-            if collection.length == 2
-              [['false', collection[0]], ['true', collection[1]]]
-            else
-              fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
-            end
-          else # :select
-            case collection[0]
-              when Array
-                collection
-              else
-                if collection[0].length == 2
-                  collection.to_a
-                else
-                  collection.each_with_index.map{|a,i| [i+1,a]}
-                end
-            end
-          end
-        else
-          collection.to_a
+      return Array(collection) if collection.is_a?(Hash)
+
+      if type == :checkbox
+        best_in_place_collection_checkbox(collection)
+      else # :select
+        best_in_place_collection_select(collection)
       end
-      collection
+    end
+
+    def best_in_place_collection_checkbox(collection)
+      if collection.length == 2
+        [['false', collection[0]], ['true', collection[1]]]
+      else
+        fail ArgumentError, '[Best_in_place] :collection array should have 2 values'
+      end
+    end
+
+    def best_in_place_collection_select(collection)
+      return Array(collection) if collection[0].is_a?(Array) || collection[0].length == 2
+
+      collection.each_with_index.map { |a, i| [i+1, a] }
     end
 
     def best_in_place_default_collection
