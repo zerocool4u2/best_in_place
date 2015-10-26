@@ -132,40 +132,22 @@ module BestInPlace
       end
     end
 
-    def best_in_place_deprecated_options(args)
-      if deprecated_option = args.delete(:path)
-        args[:url] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :path is deprecated in favor of :url ')
-      end
+    def best_in_place_deprecated_options(opts)
+      deprecations = [
+          {from: :path, to: :url},
+          {from: :object_name, to: :param},
+          {from: :type, to: :as},
+          {from: :classes, to: :class},
+          {from: :nil, to: :place_holder},
+          {from: :use_confirm, to: :confirm},
+          {from: :sanitize, to: :raw}
+      ]
 
-      if deprecated_option = args.delete(:object_name)
-        args[:param] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :object_name is deprecated in favor of :param ')
-      end
-
-      if deprecated_option = args.delete(:type)
-        args[:as] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :type is deprecated in favor of :as ')
-      end
-
-      if deprecated_option = args.delete(:classes)
-        args[:class] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :classes is deprecated in favor of :class ')
-      end
-
-      if deprecated_option = args.delete(:nil)
-        args[:place_holder] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :nil is deprecated in favor of :place_holder ')
-      end
-
-      if deprecated_option = args.delete(:use_confirm)
-        args[:confirm] = deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :use_confirm is deprecated in favor of :confirm ')
-      end
-
-      if deprecated_option = args.delete(:sanitize)
-        args[:raw] = !deprecated_option
-        ActiveSupport::Deprecation.warn('[Best_in_place] :sanitize is deprecated in favor of :raw ')
+      deprecations.each do |deprecation|
+        if deprecated_option = opts.delete(deprecation[:from])
+          opts[deprecation[:from]] = deprecated_option
+          ActiveSupport::Deprecation.warn("[Best_in_place] :#{deprecation[:from]} is deprecated in favor of :#{deprecation[:to]} ")
+        end
       end
     end
 

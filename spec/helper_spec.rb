@@ -31,6 +31,12 @@ describe BestInPlace::Helper, type: :helper do
       expect(span).not_to be_empty
     end
 
+    it "should show deprecation warning" do
+      expect(ActiveSupport::Deprecation).to receive(:warn).with("[Best_in_place] :path is deprecated in favor of :url ")
+
+      helper.best_in_place @user, :name, path: "http://example.com"
+    end
+
     it "should not allow both display_as and display_with option" do
       expect { helper.best_in_place(@user, :money, :display_with => :number_to_currency, :display_as => :custom) }.to raise_error(ArgumentError)
     end
